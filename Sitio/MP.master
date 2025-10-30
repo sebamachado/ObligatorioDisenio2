@@ -1,0 +1,20 @@
+<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="MP.master.cs" Inherits="Sitio.MP" %>
+<!DOCTYPE html>
+<html lang="es">
+<head runat="server">
+    <meta charset="utf-8" />
+    <title>Bios Messenger</title>
+    <link rel="stylesheet" type="text/css" href="~/Styles/site.css" />
+</head>
+<body>
+    <form id="form1" runat="server">
+        <div class="navbar">
+            <asp:HyperLink runat="server" NavigateUrl="~/Default.aspx" Text="Inicio" />
+            <asp:HyperLink runat="server" NavigateUrl="~/ABMUsuarios.aspx" Text="Usuarios" />
+            <asp:HyperLink runat="server" NavigateUrl="~/AltaMensaje.aspx" Text="Alta Mensaje" />
+            <asp:HyperLink runat="server" NavigateUrl="~/Bandeja.aspx" Text="Bandeja" />
+        </div>
+        <asp:ContentPlaceHolder ID="MainContent" runat="server" />
+    </form>
+</body>
+</html>

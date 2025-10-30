@@ -1,0 +1,17 @@
+# Visual Studio cache directories
+.vs/
+
+# Build outputs
+**/bin/
+**/obj/
+
+# User-specific files
+*.user
+*.suo
+
+# NuGet packages
+packages/
+
+# Temporary files
+*.tmp
+*.log
