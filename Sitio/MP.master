@@ -1,0 +1,30 @@
+<%@ Master Language="C#" AutoEventWireup="true" CodeFile="MP.master.cs" Inherits="MP" %>
+<!DOCTYPE html>
+<html lang="es">
+<head runat="server">
+    <title>BiosMessenger</title>
+    <link rel="stylesheet" type="text/css" href="Content/site.css" />
+</head>
+<body>
+    <form id="form1" runat="server">
+        <div class="header">
+            <h1>BiosMessenger</h1>
+            <asp:Menu ID="MenuPrincipal" runat="server" Orientation="Horizontal" CssClass="menu">
+                <Items>
+                    <asp:MenuItem NavigateUrl="~/Default.aspx" Text="Inicio" />
+                    <asp:MenuItem NavigateUrl="~/ABMUsuarios.aspx" Text="Usuarios" />
+                    <asp:MenuItem NavigateUrl="~/AltaMensaje.aspx" Text="Nuevo mensaje" />
+                    <asp:MenuItem NavigateUrl="~/Bandeja.aspx?tipo=entrada" Text="Bandeja de entrada" />
+                    <asp:MenuItem NavigateUrl="~/Bandeja.aspx?tipo=salida" Text="Bandeja de salida" />
+                </Items>
+            </asp:Menu>
+        </div>
+        <div class="contenido">
+            <asp:ContentPlaceHolder ID="ContenidoPrincipal" runat="server" />
+        </div>
+        <div class="footer">
+            <p>Obligatorio Diseño 2 - Caso BiosMessenger</p>
+        </div>
+    </form>
+</body>
+</html>

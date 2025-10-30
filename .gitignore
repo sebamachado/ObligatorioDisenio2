@@ -1,0 +1,21 @@
+# Visual Studio
+.vs/
+[Bb]in/
+[Oo]bj/
+*.user
+*.suo
+*.cache
+*.log
+*.ide/
+_ReSharper*/
+*.csproj.user
+*.dbmdl
+*.bak
+TestResults/
+node_modules/
+*.Publish.xml
+*.aps
+*.vspscc
+_AppStart.cshtml
+packages/*
+!packages/repositories.config
