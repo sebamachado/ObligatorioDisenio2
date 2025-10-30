@@ -1,0 +1,12 @@
+C:\Users\Ilena\Desktop\clase\L6\01B - CasoEstudioEFBDFL6\ModeloEF\bin\Debug\ModeloEF.dll.config
+C:\Users\Ilena\Desktop\clase\L6\01B - CasoEstudioEFBDFL6\ModeloEF\bin\Debug\ModeloEF.dll
+C:\Users\Ilena\Desktop\clase\L6\01B - CasoEstudioEFBDFL6\ModeloEF\bin\Debug\ModeloEF.pdb
+C:\Users\Ilena\Desktop\clase\L6\01B - CasoEstudioEFBDFL6\ModeloEF\bin\Debug\EntityFramework.dll
+C:\Users\Ilena\Desktop\clase\L6\01B - CasoEstudioEFBDFL6\ModeloEF\bin\Debug\EntityFramework.SqlServer.dll
+C:\Users\Ilena\Desktop\clase\L6\01B - CasoEstudioEFBDFL6\ModeloEF\bin\Debug\EntityFramework.xml
+C:\Users\Ilena\Desktop\clase\L6\01B - CasoEstudioEFBDFL6\ModeloEF\bin\Debug\EntityFramework.SqlServer.xml
+C:\Users\Ilena\Desktop\clase\L6\01B - CasoEstudioEFBDFL6\ModeloEF\obj\Debug\ModeloEF.csproj.AssemblyReference.cache
+C:\Users\Ilena\Desktop\clase\L6\01B - CasoEstudioEFBDFL6\ModeloEF\obj\Debug\ModeloEF.csproj.CoreCompileInputs.cache
+C:\Users\Ilena\Desktop\clase\L6\01B - CasoEstudioEFBDFL6\ModeloEF\obj\Debug\ModeloEF.csproj.CopyComplete
+C:\Users\Ilena\Desktop\clase\L6\01B - CasoEstudioEFBDFL6\ModeloEF\obj\Debug\ModeloEF.dll
+C:\Users\Ilena\Desktop\clase\L6\01B - CasoEstudioEFBDFL6\ModeloEF\obj\Debug\ModeloEF.pdb

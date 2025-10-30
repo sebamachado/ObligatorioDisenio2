@@ -1,0 +1,51 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.34114.132
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Sitio", "Sitio\", "{B89C0415-1114-4A35-B5EF-FD35758664C7}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5.1"
+		ProjectReferences = "{a70ac371-dc01-4d80-acee-4418f6926f81}|ModeloEF.dll;"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_49255"
+		Debug.AspNetCompiler.PhysicalPath = "Sitio\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_49255\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_49255"
+		Release.AspNetCompiler.PhysicalPath = "Sitio\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_49255\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "49255"
+		SlnRelativePath = "Sitio\"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModeloEF", "ModeloEF\ModeloEF.csproj", "{A70AC371-DC01-4D80-ACEE-4418F6926F81}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B89C0415-1114-4A35-B5EF-FD35758664C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B89C0415-1114-4A35-B5EF-FD35758664C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B89C0415-1114-4A35-B5EF-FD35758664C7}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{B89C0415-1114-4A35-B5EF-FD35758664C7}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{A70AC371-DC01-4D80-ACEE-4418F6926F81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A70AC371-DC01-4D80-ACEE-4418F6926F81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A70AC371-DC01-4D80-ACEE-4418F6926F81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A70AC371-DC01-4D80-ACEE-4418F6926F81}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {96869106-CA61-47F2-B5F0-17CD2A32F0EF}
+	EndGlobalSection
+EndGlobal

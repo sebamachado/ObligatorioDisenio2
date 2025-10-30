@@ -1,0 +1,6 @@
+C:\Users\Sebastian\Documents\GitHub\Obligatorio1Disenio1\BiosMessenger\EntidadesCompartidas\bin\Debug\EntidadesCompartidas.dll
+C:\Users\Sebastian\Documents\GitHub\Obligatorio1Disenio1\BiosMessenger\EntidadesCompartidas\bin\Debug\EntidadesCompartidas.pdb
+C:\Users\Sebastian\Documents\GitHub\Obligatorio1Disenio1\BiosMessenger\EntidadesCompartidas\obj\Debug\EntidadesCompartidas.csproj.AssemblyReference.cache
+C:\Users\Sebastian\Documents\GitHub\Obligatorio1Disenio1\BiosMessenger\EntidadesCompartidas\obj\Debug\EntidadesCompartidas.csproj.CoreCompileInputs.cache
+C:\Users\Sebastian\Documents\GitHub\Obligatorio1Disenio1\BiosMessenger\EntidadesCompartidas\obj\Debug\EntidadesCompartidas.dll
+C:\Users\Sebastian\Documents\GitHub\Obligatorio1Disenio1\BiosMessenger\EntidadesCompartidas\obj\Debug\EntidadesCompartidas.pdb

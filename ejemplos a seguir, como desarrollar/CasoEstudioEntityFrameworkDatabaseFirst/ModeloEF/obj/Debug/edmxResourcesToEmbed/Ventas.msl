@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="VentasModelStoreContainer" CdmEntityContainer="VentasEntities">
+    <EntitySetMapping Name="Articulos">
+      <EntityTypeMapping TypeName="VentasModel.Articulos">
+        <MappingFragment StoreEntitySet="Articulos">
+          <ScalarProperty Name="CodArt" ColumnName="CodArt" />
+          <ScalarProperty Name="NomArt" ColumnName="NomArt" />
+          <ScalarProperty Name="PreArt" ColumnName="PreArt" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Facturas">
+      <EntityTypeMapping TypeName="VentasModel.Facturas">
+        <MappingFragment StoreEntitySet="Facturas">
+          <ScalarProperty Name="NumFact" ColumnName="NumFact" />
+          <ScalarProperty Name="FechaFact" ColumnName="FechaFact" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Usuarios">
+      <EntityTypeMapping TypeName="VentasModel.Usuarios">
+        <MappingFragment StoreEntitySet="Usuarios">
+          <ScalarProperty Name="Usulog" ColumnName="Usulog" />
+          <ScalarProperty Name="PassLog" ColumnName="PassLog" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <AssociationSetMapping Name="FK__Facturas__UsuLog__164452B1" TypeName="VentasModel.FK__Facturas__UsuLog__164452B1" StoreEntitySet="Facturas">
+      <EndProperty Name="Usuarios">
+        <ScalarProperty Name="Usulog" ColumnName="UsuLog" />
+      </EndProperty>
+      <EndProperty Name="Facturas">
+        <ScalarProperty Name="NumFact" ColumnName="NumFact" />
+      </EndProperty>
+    </AssociationSetMapping>
+    <EntitySetMapping Name="LINEAS">
+      <EntityTypeMapping TypeName="VentasModel.LINEAS">
+        <MappingFragment StoreEntitySet="LINEAS">
+          <ScalarProperty Name="Cant" ColumnName="Cant" />
+          <ScalarProperty Name="CodArt" ColumnName="CodArt" />
+          <ScalarProperty Name="NumFact" ColumnName="NumFact" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping>

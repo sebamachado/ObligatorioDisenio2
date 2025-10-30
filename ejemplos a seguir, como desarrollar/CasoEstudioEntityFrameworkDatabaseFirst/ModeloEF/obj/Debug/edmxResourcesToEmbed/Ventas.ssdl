@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="VentasModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="Articulos">
+    <Key>
+      <PropertyRef Name="CodArt" />
+    </Key>
+    <Property Name="CodArt" Type="int" Nullable="false" />
+    <Property Name="NomArt" Type="varchar" MaxLength="25" Nullable="false" />
+    <Property Name="PreArt" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Facturas">
+    <Key>
+      <PropertyRef Name="NumFact" />
+    </Key>
+    <Property Name="NumFact" Type="int" Nullable="false" />
+    <Property Name="FechaFact" Type="datetime" Nullable="false" />
+    <Property Name="UsuLog" Type="varchar" MaxLength="15" Nullable="false" />
+  </EntityType>
+  <EntityType Name="LINEAS">
+    <Key>
+      <PropertyRef Name="NumFact" />
+      <PropertyRef Name="CodArt" />
+    </Key>
+    <Property Name="NumFact" Type="int" Nullable="false" />
+    <Property Name="CodArt" Type="int" Nullable="false" />
+    <Property Name="Cant" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Usuarios">
+    <Key>
+      <PropertyRef Name="Usulog" />
+    </Key>
+    <Property Name="Usulog" Type="varchar" MaxLength="15" Nullable="false" />
+    <Property Name="PassLog" Type="varchar" MaxLength="5" Nullable="false" />
+  </EntityType>
+  <Association Name="FK__Facturas__UsuLog__164452B1">
+    <End Role="Usuarios" Type="Self.Usuarios" Multiplicity="1" />
+    <End Role="Facturas" Type="Self.Facturas" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Usuarios">
+        <PropertyRef Name="Usulog" />
+      </Principal>
+      <Dependent Role="Facturas">
+        <PropertyRef Name="UsuLog" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__LINEAS__CodArt__1A14E395">
+    <End Role="Articulos" Type="Self.Articulos" Multiplicity="1" />
+    <End Role="LINEAS" Type="Self.LINEAS" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Articulos">
+        <PropertyRef Name="CodArt" />
+      </Principal>
+      <Dependent Role="LINEAS">
+        <PropertyRef Name="CodArt" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__LINEAS__NumFact__1920BF5C">
+    <End Role="Facturas" Type="Self.Facturas" Multiplicity="1" />
+    <End Role="LINEAS" Type="Self.LINEAS" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Facturas">
+        <PropertyRef Name="NumFact" />
+      </Principal>
+      <Dependent Role="LINEAS">
+        <PropertyRef Name="NumFact" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="VentasModelStoreContainer">
+    <EntitySet Name="Articulos" EntityType="Self.Articulos" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Facturas" EntityType="Self.Facturas" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="LINEAS" EntityType="Self.LINEAS" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Usuarios" EntityType="Self.Usuarios" Schema="dbo" store:Type="Tables" />
+    <AssociationSet Name="FK__Facturas__UsuLog__164452B1" Association="Self.FK__Facturas__UsuLog__164452B1">
+      <End Role="Usuarios" EntitySet="Usuarios" />
+      <End Role="Facturas" EntitySet="Facturas" />
+    </AssociationSet>
+    <AssociationSet Name="FK__LINEAS__CodArt__1A14E395" Association="Self.FK__LINEAS__CodArt__1A14E395">
+      <End Role="Articulos" EntitySet="Articulos" />
+      <End Role="LINEAS" EntitySet="LINEAS" />
+    </AssociationSet>
+    <AssociationSet Name="FK__LINEAS__NumFact__1920BF5C" Association="Self.FK__LINEAS__NumFact__1920BF5C">
+      <End Role="Facturas" EntitySet="Facturas" />
+      <End Role="LINEAS" EntitySet="LINEAS" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>

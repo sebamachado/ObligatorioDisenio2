@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="VentasModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="Articulos">
+    <Key>
+      <PropertyRef Name="CodArt" />
+    </Key>
+    <Property Name="CodArt" Type="Int32" Nullable="false" />
+    <Property Name="NomArt" Type="String" MaxLength="25" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="PreArt" Type="Int32" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Facturas">
+    <Key>
+      <PropertyRef Name="NumFact" />
+    </Key>
+    <Property Name="NumFact" Type="Int32" Nullable="false" />
+    <Property Name="FechaFact" Type="DateTime" Nullable="false" Precision="3" />
+    <NavigationProperty Name="Usuarios" Relationship="Self.FK__Facturas__UsuLog__164452B1" FromRole="Facturas" ToRole="Usuarios" />
+    <NavigationProperty Name="LINEAS" Relationship="VentasModel.FK__LINEAS__NumFact__1920BF5C" FromRole="Facturas" ToRole="LINEAS" />
+  </EntityType>
+  <EntityType Name="Usuarios">
+    <Key>
+      <PropertyRef Name="Usulog" />
+    </Key>
+    <Property Name="Usulog" Type="String" MaxLength="15" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="PassLog" Type="String" MaxLength="5" FixedLength="false" Unicode="false" Nullable="false" />
+  </EntityType>
+  <Association Name="FK__Facturas__UsuLog__164452B1">
+    <End Role="Usuarios" Type="Self.Usuarios" Multiplicity="1" />
+    <End Role="Facturas" Type="Self.Facturas" Multiplicity="*" />
+  </Association>
+  <EntityContainer Name="VentasEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="Articulos" EntityType="Self.Articulos" />
+    <EntitySet Name="Facturas" EntityType="Self.Facturas" />
+    <EntitySet Name="Usuarios" EntityType="Self.Usuarios" />
+    <AssociationSet Name="FK__Facturas__UsuLog__164452B1" Association="Self.FK__Facturas__UsuLog__164452B1">
+      <End Role="Usuarios" EntitySet="Usuarios" />
+      <End Role="Facturas" EntitySet="Facturas" />
+    </AssociationSet>
+    <EntitySet Name="LINEAS" EntityType="VentasModel.LINEAS" />
+    <AssociationSet Name="FK__LINEAS__CodArt__1A14E395" Association="VentasModel.FK__LINEAS__CodArt__1A14E395">
+      <End Role="Articulos" EntitySet="Articulos" />
+      <End Role="LINEAS" EntitySet="LINEAS" />
+    </AssociationSet>
+    <AssociationSet Name="FK__LINEAS__NumFact__1920BF5C" Association="VentasModel.FK__LINEAS__NumFact__1920BF5C">
+      <End Role="Facturas" EntitySet="Facturas" />
+      <End Role="LINEAS" EntitySet="LINEAS" />
+    </AssociationSet>
+  </EntityContainer>
+  <EntityType Name="LINEAS">
+    <Key>
+      <PropertyRef Name="NumFact" />
+      <PropertyRef Name="CodArt" />
+    </Key>
+    <Property Name="NumFact" Type="Int32" Nullable="false" />
+    <Property Name="CodArt" Type="Int32" Nullable="false" />
+    <Property Name="Cant" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="Articulos" Relationship="VentasModel.FK__LINEAS__CodArt__1A14E395" FromRole="LINEAS" ToRole="Articulos" />
+  </EntityType>
+  <Association Name="FK__LINEAS__CodArt__1A14E395">
+    <End Type="VentasModel.Articulos" Role="Articulos" Multiplicity="1" />
+    <End Type="VentasModel.LINEAS" Role="LINEAS" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Articulos">
+        <PropertyRef Name="CodArt" />
+      </Principal>
+      <Dependent Role="LINEAS">
+        <PropertyRef Name="CodArt" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__LINEAS__NumFact__1920BF5C">
+    <End Type="VentasModel.Facturas" Role="Facturas" Multiplicity="1" />
+    <End Type="VentasModel.LINEAS" Role="LINEAS" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Facturas">
+        <PropertyRef Name="NumFact" />
+      </Principal>
+      <Dependent Role="LINEAS">
+        <PropertyRef Name="NumFact" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+</Schema>
