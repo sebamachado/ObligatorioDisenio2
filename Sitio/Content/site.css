@@ -1,0 +1,48 @@
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+}
+
+.header {
+    background-color: #003366;
+    color: #ffffff;
+    padding: 1rem;
+}
+
+.menu {
+    margin-top: 1rem;
+}
+
+.menu a {
+    color: #ffffff;
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+}
+
+.contenido {
+    padding: 2rem;
+}
+
+.footer {
+    background-color: #003366;
+    color: #ffffff;
+    text-align: center;
+    padding: 1rem;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th, .table td {
+    border: 1px solid #cccccc;
+    padding: 0.5rem;
+}
+
+.validation {
+    color: #c62828;
+    font-weight: bold;
+}
