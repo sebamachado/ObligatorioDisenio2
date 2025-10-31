@@ -1,0 +1,269 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="BiosMessengerModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Categorias">
+          <Key>
+            <PropertyRef Name="Codigo" />
+          </Key>
+          <Property Name="Codigo" Type="char" MaxLength="3" Nullable="false" />
+          <Property Name="Nombre" Type="varchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="MensajeDestinatarios">
+          <Key>
+            <PropertyRef Name="MensajeId" />
+            <PropertyRef Name="DestinoUsername" />
+          </Key>
+          <Property Name="MensajeId" Type="int" Nullable="false" />
+          <Property Name="DestinoUsername" Type="char" MaxLength="8" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Mensajes">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Asunto" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Texto" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="FechaEnvio" Type="datetime" Nullable="false" />
+          <Property Name="RemitenteUsername" Type="char" MaxLength="8" Nullable="false" />
+          <Property Name="CategoriaCod" Type="char" MaxLength="3" Nullable="false" />
+          <Property Name="FechaCaducidad" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Usuarios">
+          <Key>
+            <PropertyRef Name="Username" />
+          </Key>
+          <Property Name="Username" Type="char" MaxLength="8" Nullable="false" />
+          <Property Name="Pass" Type="char" MaxLength="8" Nullable="false" />
+          <Property Name="NombreCompleto" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="FechaNacimiento" Type="date" Nullable="false" />
+          <Property Name="Email" Type="varchar" MaxLength="100" Nullable="false" />
+        </EntityType>
+        <Association Name="FK__MensajeDe__Desti__44FF419A">
+          <End Role="Usuarios" Type="Self.Usuarios" Multiplicity="1" />
+          <End Role="MensajeDestinatarios" Type="Self.MensajeDestinatarios" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Usuarios">
+              <PropertyRef Name="Username" />
+            </Principal>
+            <Dependent Role="MensajeDestinatarios">
+              <PropertyRef Name="DestinoUsername" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__MensajeDe__Mensa__440B1D61">
+          <End Role="Mensajes" Type="Self.Mensajes" Multiplicity="1" />
+          <End Role="MensajeDestinatarios" Type="Self.MensajeDestinatarios" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Mensajes">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="MensajeDestinatarios">
+              <PropertyRef Name="MensajeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Mensajes__Catego__403A8C7D">
+          <End Role="Categorias" Type="Self.Categorias" Multiplicity="1" />
+          <End Role="Mensajes" Type="Self.Mensajes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Categorias">
+              <PropertyRef Name="Codigo" />
+            </Principal>
+            <Dependent Role="Mensajes">
+              <PropertyRef Name="CategoriaCod" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Mensajes__Remite__3F466844">
+          <End Role="Usuarios" Type="Self.Usuarios" Multiplicity="1" />
+          <End Role="Mensajes" Type="Self.Mensajes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Usuarios">
+              <PropertyRef Name="Username" />
+            </Principal>
+            <Dependent Role="Mensajes">
+              <PropertyRef Name="RemitenteUsername" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="BiosMessengerModelStoreContainer">
+          <EntitySet Name="Categorias" EntityType="Self.Categorias" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MensajeDestinatarios" EntityType="Self.MensajeDestinatarios" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Mensajes" EntityType="Self.Mensajes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Usuarios" EntityType="Self.Usuarios" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK__MensajeDe__Desti__44FF419A" Association="Self.FK__MensajeDe__Desti__44FF419A">
+            <End Role="Usuarios" EntitySet="Usuarios" />
+            <End Role="MensajeDestinatarios" EntitySet="MensajeDestinatarios" />
+          </AssociationSet>
+          <AssociationSet Name="FK__MensajeDe__Mensa__440B1D61" Association="Self.FK__MensajeDe__Mensa__440B1D61">
+            <End Role="Mensajes" EntitySet="Mensajes" />
+            <End Role="MensajeDestinatarios" EntitySet="MensajeDestinatarios" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Mensajes__Catego__403A8C7D" Association="Self.FK__Mensajes__Catego__403A8C7D">
+            <End Role="Categorias" EntitySet="Categorias" />
+            <End Role="Mensajes" EntitySet="Mensajes" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Mensajes__Remite__3F466844" Association="Self.FK__Mensajes__Remite__3F466844">
+            <End Role="Usuarios" EntitySet="Usuarios" />
+            <End Role="Mensajes" EntitySet="Mensajes" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="BiosMessengerModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Categorias">
+          <Key>
+            <PropertyRef Name="Codigo" />
+          </Key>
+          <Property Name="Codigo" Type="String" MaxLength="3" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="Nombre" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="Mensajes" Relationship="Self.FK__Mensajes__Catego__403A8C7D" FromRole="Categorias" ToRole="Mensajes" />
+        </EntityType>
+        <EntityType Name="Mensajes">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Asunto" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Texto" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="FechaEnvio" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="RemitenteUsername" Type="String" MaxLength="8" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="CategoriaCod" Type="String" MaxLength="3" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="FechaCaducidad" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Categorias" Relationship="Self.FK__Mensajes__Catego__403A8C7D" FromRole="Mensajes" ToRole="Categorias" />
+          <NavigationProperty Name="Usuarios" Relationship="Self.FK__Mensajes__Remite__3F466844" FromRole="Mensajes" ToRole="Usuarios" />
+          <NavigationProperty Name="Usuarios1" Relationship="Self.MensajeDestinatarios" FromRole="Mensajes" ToRole="Usuarios" />
+        </EntityType>
+        <EntityType Name="Usuarios">
+          <Key>
+            <PropertyRef Name="Username" />
+          </Key>
+          <Property Name="Username" Type="String" MaxLength="8" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="Pass" Type="String" MaxLength="8" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="NombreCompleto" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="FechaNacimiento" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Email" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="Mensajes" Relationship="Self.FK__Mensajes__Remite__3F466844" FromRole="Usuarios" ToRole="Mensajes" />
+          <NavigationProperty Name="Mensajes1" Relationship="Self.MensajeDestinatarios" FromRole="Usuarios" ToRole="Mensajes" />
+        </EntityType>
+        <Association Name="FK__Mensajes__Catego__403A8C7D">
+          <End Role="Categorias" Type="Self.Categorias" Multiplicity="1" />
+          <End Role="Mensajes" Type="Self.Mensajes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Categorias">
+              <PropertyRef Name="Codigo" />
+            </Principal>
+            <Dependent Role="Mensajes">
+              <PropertyRef Name="CategoriaCod" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Mensajes__Remite__3F466844">
+          <End Role="Usuarios" Type="Self.Usuarios" Multiplicity="1" />
+          <End Role="Mensajes" Type="Self.Mensajes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Usuarios">
+              <PropertyRef Name="Username" />
+            </Principal>
+            <Dependent Role="Mensajes">
+              <PropertyRef Name="RemitenteUsername" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="MensajeDestinatarios">
+          <End Role="Usuarios" Type="Self.Usuarios" Multiplicity="*" />
+          <End Role="Mensajes" Type="Self.Mensajes" Multiplicity="*" />
+        </Association>
+        <EntityContainer Name="BiosMessengerEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Categorias" EntityType="Self.Categorias" />
+          <EntitySet Name="Mensajes" EntityType="Self.Mensajes" />
+          <EntitySet Name="Usuarios" EntityType="Self.Usuarios" />
+          <AssociationSet Name="FK__Mensajes__Catego__403A8C7D" Association="Self.FK__Mensajes__Catego__403A8C7D">
+            <End Role="Categorias" EntitySet="Categorias" />
+            <End Role="Mensajes" EntitySet="Mensajes" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Mensajes__Remite__3F466844" Association="Self.FK__Mensajes__Remite__3F466844">
+            <End Role="Usuarios" EntitySet="Usuarios" />
+            <End Role="Mensajes" EntitySet="Mensajes" />
+          </AssociationSet>
+          <AssociationSet Name="MensajeDestinatarios" Association="Self.MensajeDestinatarios">
+            <End Role="Usuarios" EntitySet="Usuarios" />
+            <End Role="Mensajes" EntitySet="Mensajes" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="BiosMessengerModelStoreContainer" CdmEntityContainer="BiosMessengerEntities">
+          <EntitySetMapping Name="Categorias">
+            <EntityTypeMapping TypeName="BiosMessengerModel.Categorias">
+              <MappingFragment StoreEntitySet="Categorias">
+                <ScalarProperty Name="Codigo" ColumnName="Codigo" />
+                <ScalarProperty Name="Nombre" ColumnName="Nombre" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Mensajes">
+            <EntityTypeMapping TypeName="BiosMessengerModel.Mensajes">
+              <MappingFragment StoreEntitySet="Mensajes">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Asunto" ColumnName="Asunto" />
+                <ScalarProperty Name="Texto" ColumnName="Texto" />
+                <ScalarProperty Name="FechaEnvio" ColumnName="FechaEnvio" />
+                <ScalarProperty Name="RemitenteUsername" ColumnName="RemitenteUsername" />
+                <ScalarProperty Name="CategoriaCod" ColumnName="CategoriaCod" />
+                <ScalarProperty Name="FechaCaducidad" ColumnName="FechaCaducidad" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Usuarios">
+            <EntityTypeMapping TypeName="BiosMessengerModel.Usuarios">
+              <MappingFragment StoreEntitySet="Usuarios">
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="Pass" ColumnName="Pass" />
+                <ScalarProperty Name="NombreCompleto" ColumnName="NombreCompleto" />
+                <ScalarProperty Name="FechaNacimiento" ColumnName="FechaNacimiento" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="MensajeDestinatarios" TypeName="BiosMessengerModel.MensajeDestinatarios" StoreEntitySet="MensajeDestinatarios">
+            <EndProperty Name="Usuarios">
+              <ScalarProperty Name="Username" ColumnName="DestinoUsername" />
+            </EndProperty>
+            <EndProperty Name="Mensajes">
+              <ScalarProperty Name="Id" ColumnName="MensajeId" />
+            </EndProperty>
+          </AssociationSetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="Ninguno" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
