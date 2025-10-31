@@ -7,7 +7,19 @@ public partial class Bandeja : System.Web.UI.Page
     private readonly UsuariosServicio _usuariosServicio = new UsuariosServicio();
     private readonly MensajesServicio _mensajesServicio = new MensajesServicio();
 
-    private string Tipo => (Request.QueryString["tipo"] ?? "entrada").ToLowerInvariant();
+    private string Tipo
+    {
+        get
+        {
+            string tipo = Request.QueryString["tipo"];
+            if (tipo == null)
+            {
+                tipo = "entrada";
+            }
+
+            return tipo.ToLowerInvariant();
+        }
+    }
 
     protected void Page_Load(object sender, EventArgs e)
     {

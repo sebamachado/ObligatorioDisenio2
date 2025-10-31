@@ -8,8 +8,14 @@ public partial class ABMUsuarios : System.Web.UI.Page
 
     private string UsuarioSeleccionado
     {
-        get => ViewState[nameof(UsuarioSeleccionado)] as string;
-        set => ViewState[nameof(UsuarioSeleccionado)] = value;
+        get
+        {
+            return ViewState["UsuarioSeleccionado"] as string;
+        }
+        set
+        {
+            ViewState["UsuarioSeleccionado"] = value;
+        }
     }
 
     protected void Page_Load(object sender, EventArgs e)
@@ -22,7 +28,12 @@ public partial class ABMUsuarios : System.Web.UI.Page
 
     protected void gvUsuarios_SelectedIndexChanged(object sender, EventArgs e)
     {
-        var username = gvUsuarios.SelectedDataKey?.Value as string;
+        if (gvUsuarios.SelectedDataKey == null || gvUsuarios.SelectedDataKey.Value == null)
+        {
+            return;
+        }
+
+        var username = gvUsuarios.SelectedDataKey.Value as string;
         if (string.IsNullOrEmpty(username))
         {
             return;
