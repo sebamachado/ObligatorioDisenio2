@@ -63,35 +63,83 @@ CREATE TABLE MensajeDestinatarios (
 );
 GO
 
-CREATE PROCEDURE spUsuario_Baja
-    @Username CHAR(8)
-AS
-BEGIN
-    DELETE Usuarios
-    WHERE Username = @Username;
+Create Procedure spUsuario_Baja @Username CHAR(8), @Ret INT OUTPUT AS
+Begin
+    IF (NOT EXISTS(SELECT 1 FROM Usuarios WHERE Username = @Username))
+    BEGIN
+        SET @Ret = -1;
+        RETURN;
+    END
+
+    IF (EXISTS(SELECT 1 FROM Mensajes WHERE RemitenteUsername = @Username))
+    BEGIN
+        SET @Ret = -2;
+        RETURN;
+    END
+
+    IF (EXISTS(SELECT 1 FROM MensajeDestinatarios WHERE DestinoUsername = @Username))
+    BEGIN
+        SET @Ret = -3;
+        RETURN;
+    END
+
+    DELETE FROM Usuarios WHERE Username = @Username;
+    SET @Ret = 1;
 END
 GO
 
-CREATE PROCEDURE spMensaje_Alta
-    @Asunto				VARCHAR(50),
-    @Texto				VARCHAR(100),
-    @CategoriaCod		CHAR(3),
-    @Remitente			CHAR(8),
-	@FechaCaducidad     DATETIME,
-    @Id           INT OUTPUT
-AS
-BEGIN
-    INSERT INTO Mensajes (Asunto,Texto,FechaEnvio,RemitenteUsername,CategoriaCod,FechaCaducidad)
-    VALUES (@Asunto,@Texto,GETDATE(),@Remitente,@CategoriaCod,@FechaCaducidad);
+Create Procedure spMensaje_Alta @Asunto VARCHAR(50), @Texto VARCHAR(100), @CategoriaCod CHAR(3), @Remitente CHAR(8), @FechaCaducidad DATETIME, @Id INT OUTPUT, @Ret INT OUTPUT AS
+Begin
+    IF (NOT EXISTS(SELECT 1 FROM Usuarios WHERE Username = @Remitente))
+    BEGIN
+        SET @Ret = -1;
+        RETURN;
+    END
+
+    IF (NOT EXISTS(SELECT 1 FROM Categorias WHERE Codigo = @CategoriaCod))
+    BEGIN
+        SET @Ret = -2;
+        RETURN;
+    END
+
+    IF (@FechaCaducidad <= GETDATE())
+    BEGIN
+        SET @Ret = -3;
+        RETURN;
+    END
+
+    INSERT INTO Mensajes (Asunto, Texto, FechaEnvio, RemitenteUsername, CategoriaCod, FechaCaducidad)
+    VALUES (@Asunto, @Texto, GETDATE(), @Remitente, @CategoriaCod, @FechaCaducidad);
+
     SET @Id = SCOPE_IDENTITY();
+    SET @Ret = 1;
 END
 GO
 
-CREATE PROCEDURE spMensaje_AddDestinatario
-    @IdMsg   INT,
-    @Destino CHAR(8)
-AS
-	INSERT INTO MensajeDestinatarios (MensajeId,DestinoUsername)
-	VALUES (@IdMsg,@Destino);
+Create Procedure spMensaje_AddDestinatario @IdMsg INT, @Destino CHAR(8), @Ret INT OUTPUT AS
+Begin
+    IF (NOT EXISTS(SELECT 1 FROM Mensajes WHERE Id = @IdMsg))
+    BEGIN
+        SET @Ret = -1;
+        RETURN;
+    END
+
+    IF (NOT EXISTS(SELECT 1 FROM Usuarios WHERE Username = @Destino))
+    BEGIN
+        SET @Ret = -2;
+        RETURN;
+    END
+
+    IF (EXISTS(SELECT 1 FROM MensajeDestinatarios WHERE MensajeId = @IdMsg AND DestinoUsername = @Destino))
+    BEGIN
+        SET @Ret = -3;
+        RETURN;
+    END
+
+    INSERT INTO MensajeDestinatarios (MensajeId, DestinoUsername)
+    VALUES (@IdMsg, @Destino);
+
+    SET @Ret = 1;
+END
 GO
 

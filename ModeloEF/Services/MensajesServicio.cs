@@ -87,6 +87,20 @@ namespace ModeloEF.Services
 
                 Validador.ValidarMensaje(asunto, texto, categoriaNormalizada, remitente, fechaCaducidad, destinatarioEntidades);
 
+                var idParametro = new SqlParameter
+                {
+                    ParameterName = "@Id",
+                    SqlDbType = SqlDbType.Int,
+                    Direction = ParameterDirection.Output
+                };
+
+                var retParametro = new SqlParameter
+                {
+                    ParameterName = "@Ret",
+                    SqlDbType = SqlDbType.Int,
+                    Direction = ParameterDirection.Output
+                };
+
                 var parametrosAlta = new[]
                 {
                     new SqlParameter("@Asunto", SqlDbType.VarChar, 50) {Value = asunto},
@@ -94,26 +108,43 @@ namespace ModeloEF.Services
                     new SqlParameter("@CategoriaCod", SqlDbType.Char, 3) {Value = categoriaNormalizada},
                     new SqlParameter("@Remitente", SqlDbType.Char, 8) {Value = remitenteUsername},
                     new SqlParameter("@FechaCaducidad", SqlDbType.DateTime) {Value = fechaCaducidad},
-                    new SqlParameter
-                    {
-                        ParameterName = "@Id",
-                        SqlDbType = SqlDbType.Int,
-                        Direction = ParameterDirection.Output
-                    }
+                    idParametro,
+                    retParametro
                 };
 
-                contexto.Database.ExecuteSqlCommand("EXEC spMensaje_Alta @Asunto, @Texto, @CategoriaCod, @Remitente, @FechaCaducidad, @Id OUTPUT", parametrosAlta);
-                var idMensaje = (int)parametrosAlta.Last().Value;
+                contexto.Database.ExecuteSqlCommand("EXEC spMensaje_Alta @Asunto, @Texto, @CategoriaCod, @Remitente, @FechaCaducidad, @Id OUTPUT, @Ret OUTPUT", parametrosAlta);
+
+                var resultadoAlta = (int)retParametro.Value;
+                if (resultadoAlta < 0)
+                {
+                    LanzarExcepcionPorResultadoAlta(resultadoAlta);
+                }
+
+                var idMensaje = (int)idParametro.Value;
 
                 foreach (var destinatario in destinatarioEntidades)
                 {
+                    var retParametroDestinatario = new SqlParameter
+                    {
+                        ParameterName = "@Ret",
+                        SqlDbType = SqlDbType.Int,
+                        Direction = ParameterDirection.Output
+                    };
+
                     var parametrosDestinatario = new[]
                     {
                         new SqlParameter("@IdMsg", SqlDbType.Int) {Value = idMensaje},
-                        new SqlParameter("@Destino", SqlDbType.Char, 8) {Value = destinatario.Username}
+                        new SqlParameter("@Destino", SqlDbType.Char, 8) {Value = destinatario.Username},
+                        retParametroDestinatario
                     };
 
-                    contexto.Database.ExecuteSqlCommand("EXEC spMensaje_AddDestinatario @IdMsg, @Destino", parametrosDestinatario);
+                    contexto.Database.ExecuteSqlCommand("EXEC spMensaje_AddDestinatario @IdMsg, @Destino, @Ret OUTPUT", parametrosDestinatario);
+
+                    var resultadoDestinatario = (int)retParametroDestinatario.Value;
+                    if (resultadoDestinatario < 0)
+                    {
+                        LanzarExcepcionPorResultadoDestinatario(resultadoDestinatario);
+                    }
                 }
             }
         }
@@ -134,5 +165,37 @@ namespace ModeloEF.Services
                 return query.Count();
             }
         }
-    }
+
+        private static void LanzarExcepcionPorResultadoAlta(int codigo)
+        {
+            switch (codigo)
+            {
+                case -1:
+                    throw new InvalidOperationException("El remitente indicado no existe.");
+                case -2:
+                    throw new InvalidOperationException("La categoría indicada no existe.");
+                case -3:
+                    throw new InvalidOperationException("La fecha de caducidad debe ser posterior a la fecha actual.");
+                default:
+                    throw new InvalidOperationException("Se produjo un error al crear el mensaje.");
+            }
+        }
+
+        private static void LanzarExcepcionPorResultadoDestinatario(int codigo)
+        {
+            switch (codigo)
+            {
+                case -1:
+                    throw new InvalidOperationException("El mensaje indicado no existe.");
+                case -2:
+                    throw new InvalidOperationException("El destinatario indicado no existe.");
+                case -3:
+                    throw new InvalidOperationException("El destinatario ya se encuentra asociado al mensaje.");
+                default:
+                    throw new InvalidOperationException("Se produjo un error al asociar el destinatario al mensaje.");
+            }
+        }
 }
+
+}
+
