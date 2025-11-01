@@ -7,7 +7,7 @@ using ModeloEF.Entities;
 namespace ModeloEF
 {
     /// <summary>
-    /// Contiene todas las validaciones de negocio exigidas por la letra.
+    /// Contiene todas las validaciones.
     /// </summary>
     public static class Validador
     {

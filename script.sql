@@ -9,52 +9,43 @@ USE BiosMessenger;
 GO
 
 CREATE TABLE Usuarios (
-    Username        CHAR(8)     NOT NULL PRIMARY KEY,
-    Pass            CHAR(8)     NOT NULL,
-    NombreCompleto  VARCHAR(50) NOT NULL,
-    FechaNacimiento DATE        NOT NULL,
-    Email           VARCHAR(100)NOT NULL
-);
-GO
-
-ALTER TABLE Usuarios
-ADD CONSTRAINT CK_Usuarios_FechaNacimiento_Pasado --RNE
-CHECK (FechaNacimiento <= CAST(SYSDATETIME() AS date));
-
-ALTER TABLE Usuarios
-ADD CONSTRAINT CK_Usuarios_Username_8_NoSpaces --RNE
-CHECK (
-  LEN(TRIM(Username)) = 8
-  AND Username NOT LIKE '% %'
+    Username        CHAR(8)      NOT NULL,
+    Pass            CHAR(8)      NOT NULL,
+    NombreCompleto  VARCHAR(50)  NOT NULL,
+    FechaNacimiento DATE         NOT NULL,
+    Email           VARCHAR(100) NOT NULL,
+    CONSTRAINT PK_Usuarios PRIMARY KEY (Username),
+    CONSTRAINT CK_Usuarios_FechaNacimiento_Pasado --RNE
+        CHECK (FechaNacimiento <= CAST(SYSDATETIME() AS date)),
+    CONSTRAINT CK_Usuarios_Username_8_NoSpaces --RNE
+        CHECK (LEN(TRIM(Username)) = 8 AND Username NOT LIKE '% %')
 );
 GO
 
 CREATE TABLE Categorias (
-    Codigo CHAR(3)     NOT NULL PRIMARY KEY,
-    Nombre VARCHAR(50) NOT NULL
+    Codigo CHAR(3)     NOT NULL,
+    Nombre VARCHAR(50) NOT NULL,
+    CONSTRAINT PK_Categorias PRIMARY KEY (Codigo),
+    CONSTRAINT CK_Categorias_Codigo_3Letras --RNE
+        CHECK (Codigo LIKE '[A-Za-z][A-Za-z][A-Za-z]')
 );
-GO
-
-ALTER TABLE dbo.Categorias
-ADD CONSTRAINT CK_Categorias_Codigo_3Letras --RNE
-CHECK (Codigo LIKE '[A-Za-z][A-Za-z][A-Za-z]');
 GO
 
 CREATE TABLE Mensajes (
-    Id                INT IDENTITY(1,1) PRIMARY KEY, --RNE
-    Asunto            VARCHAR(50)  NOT NULL,
-    Texto             VARCHAR(100) NOT NULL,
-    FechaEnvio        DATETIME     NOT NULL DEFAULT(GETDATE()), --RNE
-    RemitenteUsername CHAR(8)      NOT NULL REFERENCES Usuarios(Username),
-	CategoriaCod	  CHAR(3)      NOT NULL REFERENCES Categorias(Codigo),
-	FechaCaducidad    DATETIME  NOT NULL
+    Id                INT IDENTITY(1,1) NOT NULL,
+    Asunto            VARCHAR(50)   NOT NULL,
+    Texto             VARCHAR(100)  NOT NULL,
+    FechaEnvio        DATETIME      NOT NULL CONSTRAINT DF_Mensajes_FechaEnvio DEFAULT (GETDATE()), --RNE
+    RemitenteUsername CHAR(8)       NOT NULL,
+    CategoriaCod      CHAR(3)       NOT NULL,
+    FechaCaducidad    DATETIME      NOT NULL,
+    CONSTRAINT PK_Mensajes PRIMARY KEY (Id), --RNE
+    CONSTRAINT FK_Mensajes_Usuarios   FOREIGN KEY (RemitenteUsername) REFERENCES dbo.Usuarios (Username),
+    CONSTRAINT FK_Mensajes_Categorias FOREIGN KEY (CategoriaCod)      REFERENCES dbo.Categorias (Codigo),
+    CONSTRAINT CK_Mensajes_Caducidad_DMas1 --RNE
+        CHECK (DATEDIFF(DAY, CONVERT(date, FechaEnvio), CONVERT(date, FechaCaducidad)) >= 1)
 );
 GO
-
-ALTER TABLE Mensajes
-ADD CONSTRAINT CK_Mensajes_Caducidad_DMas1 --RNE
-CHECK (DATEDIFF(DAY, CONVERT(date, FechaEnvio), CONVERT(date, FechaCaducidad)) >= 1
-);
 
 CREATE TABLE MensajeDestinatarios (
     MensajeId       INT NOT NULL REFERENCES Mensajes(Id),
