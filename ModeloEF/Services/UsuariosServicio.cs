@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
@@ -104,8 +105,34 @@ namespace ModeloEF.Services
 
                 Validador.ValidarEliminacionUsuario(usuario);
 
-                var parametro = new SqlParameter("@Username", username);
-                contexto.Database.ExecuteSqlCommand("EXEC spUsuario_Baja @Username", parametro);
+                var parametros = new[]
+                {
+                    new SqlParameter("@Username", SqlDbType.Char, 8) {Value = username},
+                    new SqlParameter
+                    {
+                        ParameterName = "@Ret",
+                        SqlDbType = SqlDbType.Int,
+                        Direction = ParameterDirection.Output
+                    }
+                };
+
+                contexto.Database.ExecuteSqlCommand("EXEC spUsuario_Baja @Username, @Ret OUTPUT", parametros);
+
+                var resultado = (int)parametros[1].Value;
+                if (resultado < 0)
+                {
+                    switch (resultado)
+                    {
+                        case -1:
+                            throw new InvalidOperationException("El usuario indicado no existe.");
+                        case -2:
+                            throw new InvalidOperationException("El usuario tiene mensajes enviados asociados y no puede eliminarse.");
+                        case -3:
+                            throw new InvalidOperationException("El usuario tiene mensajes recibidos asociados y no puede eliminarse.");
+                        default:
+                            throw new InvalidOperationException("Se produjo un error al eliminar el usuario.");
+                    }
+                }
             }
         }
     }
