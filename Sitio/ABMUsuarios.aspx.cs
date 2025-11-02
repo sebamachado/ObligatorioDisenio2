@@ -7,14 +7,14 @@ using Usuario = ModeloEF.Usuarios;
 
 public partial class ABMUsuarios : System.Web.UI.Page
 {
-    private BiosMessengerEntities1 Contexto
+    private BiosMessenger Contexto
     {
         get
         {
             if (Application["Micontexto"] == null)
-                Application["Micontexto"] = new BiosMessengerEntities1();
+                Application["Micontexto"] = new BiosMessenger();
 
-            return Application["Micontexto"] as BiosMessengerEntities1;
+            return Application["Micontexto"] as BiosMessenger;
         }
     }
 
