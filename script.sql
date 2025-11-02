@@ -9,24 +9,53 @@ USE BiosMessenger;
 GO
 
 CREATE TABLE Usuarios (
-    Username        CHAR(8)      NOT NULL,
-    Pass            CHAR(8)      NOT NULL,
+    Username        VARCHAR(50)  NOT NULL,
+    Pass            VARCHAR(8)   NOT NULL,
     NombreCompleto  VARCHAR(50)  NOT NULL,
     FechaNacimiento DATE         NOT NULL,
     Email           VARCHAR(100) NOT NULL,
+
     CONSTRAINT PK_Usuarios PRIMARY KEY (Username),
-    CONSTRAINT CK_Usuarios_FechaNacimiento_Pasado --RNE
-        CHECK (FechaNacimiento <= CAST(SYSDATETIME() AS date)),
-    CONSTRAINT CK_Usuarios_Username_8_NoSpaces --RNE
-        CHECK (LEN(TRIM(Username)) = 8 AND Username NOT LIKE '% %')
+
+    -- No Fecha Nacimiento futura
+    CONSTRAINT CK_Usuarios_FechaNacimiento
+        CHECK (FechaNacimiento <= SYSDATETIME()),
+
+    -- Username minimo 8 caracteres
+    CONSTRAINT CK_Usuarios_Username
+        CHECK (LEN(Username) >= 8),
+
+    -- Password exactamente 8 caracteres con (3 letras,3 digitos, 2 simbolos)
+    CONSTRAINT CK_Usuarios_Pass
+        CHECK (
+            LEN(Pass) = 8
+            AND Pass LIKE '%[A-Za-z]%[A-Za-z]%[A-Za-z]%'   -- 3 letras
+            AND Pass LIKE '%[0-9]%[0-9]%[0-9]%'             -- 3 digitos
+            AND Pass LIKE '%[^A-Za-z0-9 ]%[^A-Za-z0-9 ]%'   -- 2 simbolos
+        ),
+
+    -- Email validación de formato
+    CONSTRAINT CK_Usuarios_Email
+        CHECK (
+            Email NOT LIKE '% %'            -- sin espacios
+            AND Email LIKE '_%@_%._%'       -- algo@algo.algo
+            AND Email NOT LIKE '%@%@%'      -- una sola @
+            AND Email NOT LIKE '@%'         -- no empieza con @
+            AND Email NOT LIKE '%.@%'       -- no punto antes de @
+            AND Email NOT LIKE '%@.%'       -- no punto despues de @
+            AND Email NOT LIKE '%..%'       -- sin puntos consecutivos
+        )
 );
 GO
+
 
 CREATE TABLE Categorias (
     Codigo CHAR(3)     NOT NULL,
     Nombre VARCHAR(50) NOT NULL,
     CONSTRAINT PK_Categorias PRIMARY KEY (Codigo),
-    CONSTRAINT CK_Categorias_Codigo_3Letras --RNE
+    
+	--Codigo debe ser de tres letras
+	CONSTRAINT CK_Categorias_Codigo
         CHECK (Codigo LIKE '[A-Za-z][A-Za-z][A-Za-z]')
 );
 GO
@@ -36,25 +65,26 @@ CREATE TABLE Mensajes (
     Asunto            VARCHAR(50)   NOT NULL,
     Texto             VARCHAR(100)  NOT NULL,
     FechaEnvio        DATETIME      NOT NULL CONSTRAINT DF_Mensajes_FechaEnvio DEFAULT (GETDATE()), --RNE
-    RemitenteUsername CHAR(8)       NOT NULL,
+    RemitenteUsername VARCHAR(50)   NOT NULL,
     CategoriaCod      CHAR(3)       NOT NULL,
     FechaCaducidad    DATETIME      NOT NULL,
-    CONSTRAINT PK_Mensajes PRIMARY KEY (Id), --RNE
+    CONSTRAINT PK_Mensajes PRIMARY KEY (Id),
     CONSTRAINT FK_Mensajes_Usuarios   FOREIGN KEY (RemitenteUsername) REFERENCES dbo.Usuarios (Username),
     CONSTRAINT FK_Mensajes_Categorias FOREIGN KEY (CategoriaCod)      REFERENCES dbo.Categorias (Codigo),
-    CONSTRAINT CK_Mensajes_Caducidad_DMas1 --RNE
-        CHECK (DATEDIFF(DAY, CONVERT(date, FechaEnvio), CONVERT(date, FechaCaducidad)) >= 1)
+    
+	CONSTRAINT CK_Mensajes_Caducidad
+        CHECK (FechaCaducidad >= DATEADD(DAY, 1, FechaEnvio))
 );
 GO
 
 CREATE TABLE MensajeDestinatarios (
     MensajeId       INT NOT NULL REFERENCES Mensajes(Id),
-    DestinoUsername CHAR(8) NOT NULL REFERENCES Usuarios(Username),
+    DestinoUsername VARCHAR(50) NOT NULL REFERENCES Usuarios(Username),
     PRIMARY KEY (MensajeId, DestinoUsername)
 );
 GO
 
-Create Procedure spUsuario_Baja @Username CHAR(8), @Ret INT OUTPUT AS
+Create Procedure spUsuario_Baja @Username VARCHAR(50), @Ret INT OUTPUT AS
 Begin
     IF (NOT EXISTS(SELECT 1 FROM Usuarios WHERE Username = @Username))
     BEGIN
@@ -79,7 +109,7 @@ Begin
 END
 GO
 
-Create Procedure spMensaje_Alta @Asunto VARCHAR(50), @Texto VARCHAR(100), @CategoriaCod CHAR(3), @Remitente CHAR(8), @FechaCaducidad DATETIME, @Id INT OUTPUT, @Ret INT OUTPUT AS
+Create Procedure spMensaje_Alta @Asunto VARCHAR(50), @Texto VARCHAR(100), @CategoriaCod CHAR(3), @Remitente VARCHAR(50), @FechaCaducidad DATETIME, @Id INT OUTPUT, @Ret INT OUTPUT AS
 Begin
     IF (NOT EXISTS(SELECT 1 FROM Usuarios WHERE Username = @Remitente))
     BEGIN
@@ -107,7 +137,7 @@ Begin
 END
 GO
 
-Create Procedure spMensaje_AddDestinatario @IdMsg INT, @Destino CHAR(8), @Ret INT OUTPUT AS
+Create Procedure spMensaje_AddDestinatario @IdMsg INT, @Destino VARCHAR(50), @Ret INT OUTPUT AS
 Begin
     IF (NOT EXISTS(SELECT 1 FROM Mensajes WHERE Id = @IdMsg))
     BEGIN
