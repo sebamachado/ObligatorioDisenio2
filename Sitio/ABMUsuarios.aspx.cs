@@ -173,7 +173,8 @@ public partial class ABMUsuarios : System.Web.UI.Page
                 }
             }
 
-            if (Session["Usuario"] is Usuario usuarioLogueado && usuarioLogueado.Username.Trim() == UsuarioSeleccionado)
+            var usuarioLogueado = Session["Usuario"] as Usuario;
+            if (usuarioLogueado != null && usuarioLogueado.Username.Trim() == UsuarioSeleccionado)
             {
                 Session["Usuario"] = null;
                 Response.Redirect("~/Default.aspx");

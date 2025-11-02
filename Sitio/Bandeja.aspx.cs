@@ -81,14 +81,14 @@ public partial class Bandeja : System.Web.UI.Page
                 ? contexto.Mensajes
                     .Include(m => m.Destinatarios)
                     .Include(m => m.Remitente)
-                    .Include(m => m.Categoria)
+                    .Include(m => m.Categorias)
                     .Where(m => m.Remitente.Username.Trim() == usuario)
                     .OrderByDescending(m => m.FechaEnvio)
                     .ToList()
                 : contexto.Mensajes
                     .Include(m => m.Destinatarios)
                     .Include(m => m.Remitente)
-                    .Include(m => m.Categoria)
+                    .Include(m => m.Categorias)
                     .Where(m => m.Destinatarios.Any(d => d.Username.Trim() == usuario) && m.FechaCaducidad > DateTime.Now)
                     .OrderByDescending(m => m.FechaEnvio)
                     .ToList();
@@ -97,7 +97,7 @@ public partial class Bandeja : System.Web.UI.Page
             {
                 m.Asunto,
                 Remitente = m.Remitente.Username.Trim(),
-                Categoria = m.Categoria.Nombre,
+                Categoria = m.Categorias.Nombre,
                 FechaEnvio = m.FechaEnvio,
                 FechaCaducidad = m.FechaCaducidad,
                 Destinatarios = string.Join(", ", m.Destinatarios.Select(d => d.Username.Trim()))
