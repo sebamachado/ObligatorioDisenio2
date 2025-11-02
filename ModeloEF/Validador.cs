@@ -1,57 +1,59 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using Usuario = ModeloEF.Usuarios;
 
 namespace ModeloEF
 {
-    /// <summary>
-    /// Contiene todas las validaciones.
-    /// </summary>
-    public static class Validador
-    {
-        private static readonly Regex UsuarioRegex = new Regex("^[A-Z0-9]{8}$", RegexOptions.Compiled);
-        private static readonly Regex PasswordRegex = new Regex("^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)[A-Za-z\\d]{8}$", RegexOptions.Compiled);
-        private static readonly Regex EmailRegex = new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", RegexOptions.Compiled);
+    //esta clase esta por fuera del modelo EF - significa que si actualizo el modelo no la toca
+    //pero esta dentro de la misma biblioteca
 
+    public class Validador
+    {
+        //genero operaciones de clase para validar cada concepto
+        //son operaciones VOID - lanzan exception si hay error (ya viene objeto cargado con los datos)
         public static void ValidarUsuario(Usuario usuario)
         {
             if (usuario == null)
-            {
-                throw new ArgumentNullException(nameof(usuario));
-            }
+                throw new Exception("Usuario: datos obligatorios");
 
-            if (!UsuarioRegex.IsMatch(usuario.Username ?? string.Empty))
-            {
-                throw new ArgumentException("El nombre de usuario debe contener exactamente ocho caracteres alfanuméricos en mayúscula.");
-            }
+            var nombre = usuario.Username == null ? string.Empty : usuario.Username.Trim();
+            if (nombre.Length != 8)
+                throw new Exception("Usuario: nombre debe tener 8 caracteres");
 
-            if (!PasswordRegex.IsMatch(usuario.Pass ?? string.Empty))
-            {
-                throw new ArgumentException("La contraseña debe tener ocho caracteres, incluir mayúsculas, minúsculas y dígitos.");
-            }
+            if (nombre.ToUpperInvariant() != nombre)
+                throw new Exception("Usuario: nombre en mayúsculas");
+
+            if (nombre.Any(caracter => !char.IsLetterOrDigit(caracter)))
+                throw new Exception("Usuario: nombre solo admite letras y números");
+
+            var pass = usuario.Pass == null ? string.Empty : usuario.Pass.Trim();
+            if (pass.Length != 8)
+                throw new Exception("Usuario: password debe tener 8 caracteres");
+
+            if (!pass.Any(char.IsUpper))
+                throw new Exception("Usuario: password requiere mayúsculas");
+
+            if (!pass.Any(char.IsLower))
+                throw new Exception("Usuario: password requiere minúsculas");
+
+            if (!pass.Any(char.IsDigit))
+                throw new Exception("Usuario: password requiere números");
 
             if (string.IsNullOrWhiteSpace(usuario.NombreCompleto) || usuario.NombreCompleto.Trim().Length > 50)
-            {
-                throw new ArgumentException("El nombre completo es obligatorio y no puede superar los 50 caracteres.");
-            }
+                throw new Exception("Usuario: nombre completo obligatorio (máx. 50 caracteres)");
 
-            if (!EmailRegex.IsMatch(usuario.Email ?? string.Empty))
-            {
-                throw new ArgumentException("El correo electrónico no tiene un formato válido.");
-            }
+            if (string.IsNullOrWhiteSpace(usuario.Email) || usuario.Email.Trim().Length > 100)
+                throw new Exception("Usuario: email obligatorio (máx. 100 caracteres)");
+
+            if (!usuario.Email.Contains("@") || !usuario.Email.Contains("."))
+                throw new Exception("Usuario: email con formato inválido");
 
             if (usuario.FechaNacimiento.Date >= DateTime.Today)
-            {
-                throw new ArgumentException("La fecha de nacimiento debe estar en el pasado.");
-            }
+                throw new Exception("Usuario: fecha de nacimiento en el pasado");
 
-            var edad = CalcularEdad(usuario.FechaNacimiento, DateTime.Today);
-            if (edad < 18)
-            {
-                throw new ArgumentException("Los usuarios deben ser mayores de edad.");
-            }
+            if (CalcularEdad(usuario.FechaNacimiento, DateTime.Today) < 18)
+                throw new Exception("Usuario: mayor de edad");
         }
 
         public static void ValidarActualizacionUsuario(Usuario usuario)
@@ -62,79 +64,70 @@ namespace ModeloEF
         public static void ValidarEliminacionUsuario(Usuario usuario, bool tieneMensajesEnviados, bool tieneMensajesRecibidos)
         {
             if (usuario == null)
-            {
-                throw new ArgumentNullException(nameof(usuario));
-            }
+                throw new Exception("Usuario: datos obligatorios");
 
             if (tieneMensajesEnviados)
-            {
-                throw new InvalidOperationException("No es posible eliminar un usuario con mensajes enviados.");
-            }
+                throw new Exception("Usuario: no se puede eliminar con mensajes enviados");
 
             if (tieneMensajesRecibidos)
-            {
-                throw new InvalidOperationException("No es posible eliminar un usuario que haya recibido mensajes.");
-            }
+                throw new Exception("Usuario: no se puede eliminar con mensajes recibidos");
         }
 
         public static void ValidarMensaje(string asunto, string texto, string categoriaCod, Usuario remitente, DateTime fechaCaducidad, IEnumerable<Usuario> destinatarios)
         {
             if (remitente == null)
-            {
-                throw new ArgumentNullException(nameof(remitente));
-            }
+                throw new Exception("Mensaje: remitente obligatorio");
 
-            if (string.IsNullOrWhiteSpace(asunto) || asunto.Trim().Length > 50)
-            {
-                throw new ArgumentException("El asunto es obligatorio y debe tener hasta 50 caracteres.");
-            }
+            var asuntoLimpio = string.IsNullOrWhiteSpace(asunto) ? string.Empty : asunto.Trim();
+            if (asuntoLimpio.Length == 0 || asuntoLimpio.Length > 50)
+                throw new Exception("Mensaje: asunto obligatorio (máx. 50 caracteres)");
 
-            if (string.IsNullOrWhiteSpace(texto) || texto.Trim().Length > 100)
-            {
-                throw new ArgumentException("El texto es obligatorio y debe tener hasta 100 caracteres.");
-            }
+            var textoLimpio = string.IsNullOrWhiteSpace(texto) ? string.Empty : texto.Trim();
+            if (textoLimpio.Length == 0 || textoLimpio.Length > 100)
+                throw new Exception("Mensaje: texto obligatorio (máx. 100 caracteres)");
 
-            if (string.IsNullOrWhiteSpace(categoriaCod) || categoriaCod.Length != 3)
-            {
-                throw new ArgumentException("La categoría es obligatoria y debe corresponder a un código de tres caracteres.");
-            }
+            var categoriaLimpia = string.IsNullOrWhiteSpace(categoriaCod) ? string.Empty : categoriaCod.Trim().ToUpperInvariant();
+            if (categoriaLimpia.Length != 3)
+                throw new Exception("Mensaje: categoría de 3 caracteres");
 
             if (fechaCaducidad.Date <= DateTime.Today)
-            {
-                throw new ArgumentException("La fecha de caducidad debe ser al menos el día siguiente al envío.");
-            }
+                throw new Exception("Mensaje: fecha de caducidad posterior al día de hoy");
 
-            if (destinatarios == null || !destinatarios.Any())
-            {
-                throw new ArgumentException("Debe seleccionarse al menos un destinatario.");
-            }
+            if (destinatarios == null)
+                throw new Exception("Mensaje: destinatarios obligatorios");
 
-            if (destinatarios.Any(d => d.Username == remitente.Username))
-            {
-                throw new ArgumentException("El remitente no puede figurar como destinatario.");
-            }
+            var listaDestinatarios = destinatarios.ToList();
+            if (listaDestinatarios.Count == 0)
+                throw new Exception("Mensaje: al menos un destinatario");
 
-            if (destinatarios.Select(d => d.Username).Distinct().Count() != destinatarios.Count())
-            {
-                throw new ArgumentException("Los destinatarios no pueden repetirse.");
-            }
+            var remitenteNombre = remitente.Username == null ? string.Empty : remitente.Username.Trim().ToUpperInvariant();
+            var tieneRemitente = (from dest in listaDestinatarios
+                                  let nombre = dest.Username == null ? string.Empty : dest.Username.Trim().ToUpperInvariant()
+                                  where nombre == remitenteNombre
+                                  select dest).Any();
+            if (tieneRemitente)
+                throw new Exception("Mensaje: remitente no puede ser destinatario");
+
+            var duplicados = (from dest in listaDestinatarios
+                              let nombre = dest.Username == null ? string.Empty : dest.Username.Trim().ToUpperInvariant()
+                              group dest by nombre into grupo
+                              where grupo.Key.Length > 0 && grupo.Count() > 1
+                              select grupo.Key).Any();
+            if (duplicados)
+                throw new Exception("Mensaje: destinatarios repetidos");
         }
 
         public static void ValidarDestinatarios(IEnumerable<Usuario> destinatarios)
         {
             if (destinatarios == null || !destinatarios.Any())
-            {
-                throw new ArgumentException("El mensaje debe tener al menos un destinatario.");
-            }
+                throw new Exception("Mensaje: al menos un destinatario");
         }
 
         private static int CalcularEdad(DateTime nacimiento, DateTime hoy)
         {
             var edad = hoy.Year - nacimiento.Year;
             if (nacimiento.Date > hoy.AddYears(-edad))
-            {
                 edad--;
-            }
 
             return edad;
         }
