@@ -1,10 +1,22 @@
 using System;
-using ModeloEF.Entities;
-using ModeloEF.Services;
+using System.Data;
+using System.Data.SqlClient;
+using System.Linq;
+using ModeloEF;
+using Usuario = ModeloEF.Usuarios;
 
 public partial class ABMUsuarios : System.Web.UI.Page
 {
-    private readonly UsuariosServicio _usuariosServicio = new UsuariosServicio();
+    private BiosMessengerEntities1 Contexto
+    {
+        get
+        {
+            if (Application["Micontexto"] == null)
+                Application["Micontexto"] = new BiosMessengerEntities1();
+
+            return Application["Micontexto"] as BiosMessengerEntities1;
+        }
+    }
 
     private string UsuarioSeleccionado
     {
@@ -39,7 +51,8 @@ public partial class ABMUsuarios : System.Web.UI.Page
             return;
         }
 
-        var usuario = _usuariosServicio.ObtenerPorUsername(username);
+        var contexto = Contexto;
+        var usuario = contexto.Usuarios.SingleOrDefault(u => u.Username.Trim() == username.Trim());
         if (usuario == null)
         {
             lblMensaje.Text = "No se encontró el usuario seleccionado.";
@@ -70,6 +83,7 @@ public partial class ABMUsuarios : System.Web.UI.Page
                 throw new InvalidOperationException("Debe ingresar la fecha de nacimiento.");
             }
 
+            var contexto = Contexto;
             var usuario = new Usuario
             {
                 Username = txtUsuario.Text.Trim().ToUpperInvariant(),
@@ -81,12 +95,28 @@ public partial class ABMUsuarios : System.Web.UI.Page
 
             if (string.IsNullOrEmpty(UsuarioSeleccionado))
             {
-                _usuariosServicio.Crear(usuario);
+                Validador.ValidarUsuario(usuario);
+
+                if (contexto.Usuarios.Any(u => u.Username.Trim() == usuario.Username))
+                    throw new InvalidOperationException("Ya existe un usuario con el nombre especificado.");
+
+                contexto.Usuarios.Add(usuario);
+                contexto.SaveChanges();
                 lblMensaje.Text = "Usuario creado correctamente.";
             }
             else
             {
-                _usuariosServicio.Actualizar(usuario);
+                Validador.ValidarActualizacionUsuario(usuario);
+
+                var existente = contexto.Usuarios.SingleOrDefault(u => u.Username.Trim() == UsuarioSeleccionado);
+                if (existente == null)
+                    throw new InvalidOperationException("El usuario indicado no existe.");
+
+                existente.Pass = usuario.Pass;
+                existente.NombreCompleto = usuario.NombreCompleto;
+                existente.Email = usuario.Email;
+                existente.FechaNacimiento = usuario.FechaNacimiento;
+                contexto.SaveChanges();
                 lblMensaje.Text = "Usuario actualizado correctamente.";
             }
 
@@ -109,7 +139,47 @@ public partial class ABMUsuarios : System.Web.UI.Page
 
         try
         {
-            _usuariosServicio.Eliminar(UsuarioSeleccionado);
+            var contexto = Contexto;
+            var usuario = contexto.Usuarios.SingleOrDefault(u => u.Username.Trim() == UsuarioSeleccionado);
+            if (usuario == null)
+                throw new InvalidOperationException("El usuario indicado no existe.");
+
+            var tieneMensajesEnviados = contexto.Mensajes.Any(m => m.Remitente.Username.Trim() == UsuarioSeleccionado);
+            var tieneMensajesRecibidos = contexto.Mensajes.Any(m => m.Destinatarios.Any(d => d.Username.Trim() == UsuarioSeleccionado));
+
+            Validador.ValidarEliminacionUsuario(usuario, tieneMensajesEnviados, tieneMensajesRecibidos);
+
+            var usernameParametro = new SqlParameter("@Username", SqlDbType.Char, 8) { Value = UsuarioSeleccionado };
+            var retornoParametro = new SqlParameter("@Ret", SqlDbType.Int) { Direction = ParameterDirection.Output };
+
+            contexto.Database.ExecuteSqlCommand(
+                "exec spUsuario_Baja @Username, @Ret output",
+                usernameParametro,
+                retornoParametro);
+
+            var resultado = (int)retornoParametro.Value;
+            if (resultado < 0)
+            {
+                switch (resultado)
+                {
+                    case -1:
+                        throw new InvalidOperationException("El usuario indicado no existe.");
+                    case -2:
+                        throw new InvalidOperationException("El usuario tiene mensajes enviados asociados y no puede eliminarse.");
+                    case -3:
+                        throw new InvalidOperationException("El usuario tiene mensajes recibidos asociados y no puede eliminarse.");
+                    default:
+                        throw new InvalidOperationException("Se produjo un error al eliminar el usuario.");
+                }
+            }
+
+            if (Session["Usuario"] is Usuario usuarioLogueado && usuarioLogueado.Username.Trim() == UsuarioSeleccionado)
+            {
+                Session["Usuario"] = null;
+                Response.Redirect("~/Default.aspx");
+                return;
+            }
+
             lblMensaje.Text = "Usuario eliminado correctamente.";
             CargarUsuarios();
             LimpiarFormulario();
@@ -122,7 +192,18 @@ public partial class ABMUsuarios : System.Web.UI.Page
 
     private void CargarUsuarios()
     {
-        gvUsuarios.DataSource = _usuariosServicio.ObtenerTodos();
+        var contexto = Contexto;
+        gvUsuarios.DataSource = contexto.Usuarios
+            .OrderBy(u => u.Username)
+            .Select(u => new
+            {
+                Username = u.Username.Trim(),
+                Pass = u.Pass.Trim(),
+                u.NombreCompleto,
+                u.Email,
+                u.FechaNacimiento
+            })
+            .ToList();
         gvUsuarios.DataBind();
     }
 

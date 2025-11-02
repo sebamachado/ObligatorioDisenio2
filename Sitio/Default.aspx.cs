@@ -1,10 +1,19 @@
 using System;
-using ModeloEF.Services;
+using System.Linq;
+using ModeloEF;
 
 public partial class _Default : System.Web.UI.Page
 {
-    private readonly UsuariosServicio _usuariosServicio = new UsuariosServicio();
-    private readonly MensajesServicio _mensajesServicio = new MensajesServicio();
+    private BiosMessengerEntities1 Contexto
+    {
+        get
+        {
+            if (Application["Micontexto"] == null)
+                Application["Micontexto"] = new BiosMessengerEntities1();
+
+            return Application["Micontexto"] as BiosMessengerEntities1;
+        }
+    }
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -18,9 +27,10 @@ public partial class _Default : System.Web.UI.Page
     {
         try
         {
-            lblTotalUsuarios.Text = _usuariosServicio.ContarUsuarios().ToString();
-            lblTotalMensajes.Text = _mensajesServicio.ContarMensajes().ToString();
-            lblMasDestinatarios.Text = _mensajesServicio.ContarMensajesConMasDeCincoDestinatarios().ToString();
+            var contexto = Contexto;
+            lblTotalUsuarios.Text = contexto.Usuarios.Count().ToString();
+            lblTotalMensajes.Text = contexto.Mensajes.Count().ToString();
+            lblMasDestinatarios.Text = contexto.Mensajes.Count(m => m.Destinatarios.Count() > 5).ToString();
             lblMensaje.Text = string.Empty;
         }
         catch (Exception ex)

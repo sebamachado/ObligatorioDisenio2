@@ -11,7 +11,7 @@
             <asp:BoundField DataField="Remitente.Username" HeaderText="Remitente" />
             <asp:TemplateField HeaderText="Destinatarios">
                 <ItemTemplate>
-                    <asp:Repeater ID="repDestinatarios" runat="server" DataSource='<%# ((ModeloEF.Entities.Mensaje)Container.DataItem).Destinatarios %>'>
+                    <asp:Repeater ID="repDestinatarios" runat="server" DataSource='<%# ((ModeloEF.Mensajes)Container.DataItem).Destinatarios %>'>
                         <ItemTemplate>
                             <%# Eval("Username") %><br />
                         </ItemTemplate>
