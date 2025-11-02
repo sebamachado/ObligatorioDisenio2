@@ -1,6 +1,6 @@
 using System;
-using ModeloEF.Entities;
 using ModeloEF.Services;
+using Usuario = ModeloEF.Usuarios;
 
 public partial class ABMUsuarios : System.Web.UI.Page
 {

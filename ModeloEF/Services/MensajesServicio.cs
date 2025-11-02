@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
-using ModeloEF.Entities;
+using System.Data.Entity;
+using Categoria = ModeloEF.Categorias;
+using Mensaje = ModeloEF.Mensajes;
+using Usuario = ModeloEF.Usuarios;
 
 namespace ModeloEF.Services
 {
@@ -15,7 +17,7 @@ namespace ModeloEF.Services
     {
         public IList<Categoria> ObtenerCategorias()
         {
-            using (var contexto = new BiosMessengerContext())
+            using (var contexto = new BiosMessengerEntities1())
             {
                 return contexto.Categorias
                     .OrderBy(c => c.Nombre)
@@ -25,7 +27,7 @@ namespace ModeloEF.Services
 
         public int ContarMensajes()
         {
-            using (var contexto = new BiosMessengerContext())
+            using (var contexto = new BiosMessengerEntities1())
             {
                 return contexto.Mensajes.Count();
             }
@@ -33,13 +35,13 @@ namespace ModeloEF.Services
 
         public IList<Mensaje> ObtenerBandejaSalida(string remitente)
         {
-            using (var contexto = new BiosMessengerContext())
+            using (var contexto = new BiosMessengerEntities1())
             {
                 return contexto.Mensajes
-                    .Include("Destinatarios")
-                    .Include("Remitente")
-                    .Include("Categoria")
-                    .Where(m => m.RemitenteUsername == remitente)
+                    .Include(m => m.Destinatarios)
+                    .Include(m => m.Remitente)
+                    .Include(m => m.Categoria)
+                    .Where(m => m.Remitente.Username == remitente)
                     .OrderByDescending(m => m.FechaEnvio)
                     .ToList();
             }
@@ -47,13 +49,13 @@ namespace ModeloEF.Services
 
         public IList<Mensaje> ObtenerBandejaEntrada(string destinatario)
         {
-            using (var contexto = new BiosMessengerContext())
+            using (var contexto = new BiosMessengerEntities1())
             {
                 var hoy = DateTime.Now;
                 return contexto.Mensajes
-                    .Include("Destinatarios")
-                    .Include("Remitente")
-                    .Include("Categoria")
+                    .Include(m => m.Destinatarios)
+                    .Include(m => m.Remitente)
+                    .Include(m => m.Categoria)
                     .Where(m => m.Destinatarios.Any(u => u.Username == destinatario) && m.FechaCaducidad > hoy)
                     .OrderByDescending(m => m.FechaEnvio)
                     .ToList();
@@ -65,7 +67,7 @@ namespace ModeloEF.Services
         /// </summary>
         public void CrearMensaje(string asunto, string texto, string categoriaCod, string remitenteUsername, DateTime fechaCaducidad, IEnumerable<string> destinatarios)
         {
-            using (var contexto = new BiosMessengerContext())
+            using (var contexto = new BiosMessengerEntities1())
             {
                 remitenteUsername = remitenteUsername.ToUpperInvariant();
                 var remitente = contexto.Usuarios.SingleOrDefault(u => u.Username == remitenteUsername);
@@ -87,32 +89,50 @@ namespace ModeloEF.Services
 
                 Validador.ValidarMensaje(asunto, texto, categoriaNormalizada, remitente, fechaCaducidad, destinatarioEntidades);
 
-                var idParametro = new SqlParameter
+                var asuntoParametro = new SqlParameter("@Asunto", SqlDbType.VarChar, 50)
                 {
-                    ParameterName = "@Id",
-                    SqlDbType = SqlDbType.Int,
+                    Value = asunto
+                };
+
+                var textoParametro = new SqlParameter("@Texto", SqlDbType.VarChar, 100)
+                {
+                    Value = texto
+                };
+
+                var categoriaParametro = new SqlParameter("@CategoriaCod", SqlDbType.Char, 3)
+                {
+                    Value = categoriaNormalizada
+                };
+
+                var remitenteParametro = new SqlParameter("@Remitente", SqlDbType.Char, 8)
+                {
+                    Value = remitenteUsername
+                };
+
+                var fechaCaducidadParametro = new SqlParameter("@FechaCaducidad", SqlDbType.DateTime)
+                {
+                    Value = fechaCaducidad
+                };
+
+                var idParametro = new SqlParameter("@Id", SqlDbType.Int)
+                {
                     Direction = ParameterDirection.Output
                 };
 
-                var retParametro = new SqlParameter
+                var retParametro = new SqlParameter("@Ret", SqlDbType.Int)
                 {
-                    ParameterName = "@Ret",
-                    SqlDbType = SqlDbType.Int,
                     Direction = ParameterDirection.Output
                 };
 
-                var parametrosAlta = new[]
-                {
-                    new SqlParameter("@Asunto", SqlDbType.VarChar, 50) {Value = asunto},
-                    new SqlParameter("@Texto", SqlDbType.VarChar, 100) {Value = texto},
-                    new SqlParameter("@CategoriaCod", SqlDbType.Char, 3) {Value = categoriaNormalizada},
-                    new SqlParameter("@Remitente", SqlDbType.Char, 8) {Value = remitenteUsername},
-                    new SqlParameter("@FechaCaducidad", SqlDbType.DateTime) {Value = fechaCaducidad},
+                contexto.Database.ExecuteSqlCommand(
+                    "EXEC spMensaje_Alta @Asunto, @Texto, @CategoriaCod, @Remitente, @FechaCaducidad, @Id OUTPUT, @Ret OUTPUT",
+                    asuntoParametro,
+                    textoParametro,
+                    categoriaParametro,
+                    remitenteParametro,
+                    fechaCaducidadParametro,
                     idParametro,
-                    retParametro
-                };
-
-                contexto.Database.ExecuteSqlCommand("EXEC spMensaje_Alta @Asunto, @Texto, @CategoriaCod, @Remitente, @FechaCaducidad, @Id OUTPUT, @Ret OUTPUT", parametrosAlta);
+                    retParametro);
 
                 var resultadoAlta = (int)retParametro.Value;
                 if (resultadoAlta < 0)
@@ -124,21 +144,26 @@ namespace ModeloEF.Services
 
                 foreach (var destinatario in destinatarioEntidades)
                 {
-                    var retParametroDestinatario = new SqlParameter
+                    var idMensajeParametro = new SqlParameter("@IdMsg", SqlDbType.Int)
                     {
-                        ParameterName = "@Ret",
-                        SqlDbType = SqlDbType.Int,
+                        Value = idMensaje
+                    };
+
+                    var destinoParametro = new SqlParameter("@Destino", SqlDbType.Char, 8)
+                    {
+                        Value = destinatario.Username
+                    };
+
+                    var retParametroDestinatario = new SqlParameter("@Ret", SqlDbType.Int)
+                    {
                         Direction = ParameterDirection.Output
                     };
 
-                    var parametrosDestinatario = new[]
-                    {
-                        new SqlParameter("@IdMsg", SqlDbType.Int) {Value = idMensaje},
-                        new SqlParameter("@Destino", SqlDbType.Char, 8) {Value = destinatario.Username},
-                        retParametroDestinatario
-                    };
-
-                    contexto.Database.ExecuteSqlCommand("EXEC spMensaje_AddDestinatario @IdMsg, @Destino, @Ret OUTPUT", parametrosDestinatario);
+                    contexto.Database.ExecuteSqlCommand(
+                        "EXEC spMensaje_AddDestinatario @IdMsg, @Destino, @Ret OUTPUT",
+                        idMensajeParametro,
+                        destinoParametro,
+                        retParametroDestinatario);
 
                     var resultadoDestinatario = (int)retParametroDestinatario.Value;
                     if (resultadoDestinatario < 0)
@@ -154,15 +179,9 @@ namespace ModeloEF.Services
         /// </summary>
         public int ContarMensajesConMasDeCincoDestinatarios()
         {
-            using (var contexto = new BiosMessengerContext())
+            using (var contexto = new BiosMessengerEntities1())
             {
-                var query = from mensaje in contexto.Mensajes
-                            where (from destino in contexto.Usuarios
-                                   where destino.MensajesDestinados.Any(m => m.Id == mensaje.Id)
-                                   select destino.Username).Count() > 5
-                            select mensaje.Id;
-
-                return query.Count();
+                return contexto.Mensajes.Count(m => m.Destinatarios.Count() > 5);
             }
         }
 
