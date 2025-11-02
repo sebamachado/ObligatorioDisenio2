@@ -1,11 +1,20 @@
 using System;
+using System.Data.Entity;
 using System.Linq;
-using ModeloEF.Services;
+using ModeloEF;
 
 public partial class Bandeja : System.Web.UI.Page
 {
-    private readonly UsuariosServicio _usuariosServicio = new UsuariosServicio();
-    private readonly MensajesServicio _mensajesServicio = new MensajesServicio();
+    private BiosMessengerEntities1 Contexto
+    {
+        get
+        {
+            if (Application["Micontexto"] == null)
+                Application["Micontexto"] = new BiosMessengerEntities1();
+
+            return Application["Micontexto"] as BiosMessengerEntities1;
+        }
+    }
 
     private string Tipo
     {
@@ -43,7 +52,12 @@ public partial class Bandeja : System.Web.UI.Page
 
     private void CargarUsuarios()
     {
-        var usuarios = _usuariosServicio.ObtenerTodos();
+        var contexto = Contexto;
+        var usuarios = contexto.Usuarios
+            .OrderBy(u => u.Username)
+            .Select(u => new { Username = u.Username.Trim() })
+            .ToList();
+
         ddlUsuario.DataSource = usuarios;
         ddlUsuario.DataTextField = "Username";
         ddlUsuario.DataValueField = "Username";
@@ -61,12 +75,33 @@ public partial class Bandeja : System.Web.UI.Page
 
         try
         {
-            var usuario = ddlUsuario.SelectedValue;
+            var contexto = Contexto;
+            var usuario = ddlUsuario.SelectedValue.Trim();
             var datos = Tipo == "salida"
-                ? _mensajesServicio.ObtenerBandejaSalida(usuario)
-                : _mensajesServicio.ObtenerBandejaEntrada(usuario);
+                ? contexto.Mensajes
+                    .Include(m => m.Destinatarios)
+                    .Include(m => m.Remitente)
+                    .Include(m => m.Categoria)
+                    .Where(m => m.Remitente.Username.Trim() == usuario)
+                    .OrderByDescending(m => m.FechaEnvio)
+                    .ToList()
+                : contexto.Mensajes
+                    .Include(m => m.Destinatarios)
+                    .Include(m => m.Remitente)
+                    .Include(m => m.Categoria)
+                    .Where(m => m.Destinatarios.Any(d => d.Username.Trim() == usuario) && m.FechaCaducidad > DateTime.Now)
+                    .OrderByDescending(m => m.FechaEnvio)
+                    .ToList();
 
-            gvMensajes.DataSource = datos;
+            gvMensajes.DataSource = datos.Select(m => new
+            {
+                m.Asunto,
+                Remitente = m.Remitente.Username.Trim(),
+                Categoria = m.Categoria.Nombre,
+                FechaEnvio = m.FechaEnvio,
+                FechaCaducidad = m.FechaCaducidad,
+                Destinatarios = string.Join(", ", m.Destinatarios.Select(d => d.Username.Trim()))
+            });
             gvMensajes.DataBind();
             lblMensaje.Text = datos.Any() ? string.Empty : "No hay mensajes para mostrar.";
         }

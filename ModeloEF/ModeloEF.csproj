@@ -62,8 +62,6 @@
       <DependentUpon>Model1.edmx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\MensajesServicio.cs" />
-    <Compile Include="Services\UsuariosServicio.cs" />
     <Compile Include="Validador.cs" />
     <Compile Include="Categorias.cs" />
     <Compile Include="Mensajes.cs" />
