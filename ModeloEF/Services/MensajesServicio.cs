@@ -89,32 +89,50 @@ namespace ModeloEF.Services
 
                 Validador.ValidarMensaje(asunto, texto, categoriaNormalizada, remitente, fechaCaducidad, destinatarioEntidades);
 
-                var idParametro = new SqlParameter
+                var asuntoParametro = new SqlParameter("@Asunto", SqlDbType.VarChar, 50)
                 {
-                    ParameterName = "@Id",
-                    SqlDbType = SqlDbType.Int,
+                    Value = asunto
+                };
+
+                var textoParametro = new SqlParameter("@Texto", SqlDbType.VarChar, 100)
+                {
+                    Value = texto
+                };
+
+                var categoriaParametro = new SqlParameter("@CategoriaCod", SqlDbType.Char, 3)
+                {
+                    Value = categoriaNormalizada
+                };
+
+                var remitenteParametro = new SqlParameter("@Remitente", SqlDbType.Char, 8)
+                {
+                    Value = remitenteUsername
+                };
+
+                var fechaCaducidadParametro = new SqlParameter("@FechaCaducidad", SqlDbType.DateTime)
+                {
+                    Value = fechaCaducidad
+                };
+
+                var idParametro = new SqlParameter("@Id", SqlDbType.Int)
+                {
                     Direction = ParameterDirection.Output
                 };
 
-                var retParametro = new SqlParameter
+                var retParametro = new SqlParameter("@Ret", SqlDbType.Int)
                 {
-                    ParameterName = "@Ret",
-                    SqlDbType = SqlDbType.Int,
                     Direction = ParameterDirection.Output
                 };
 
-                var parametrosAlta = new[]
-                {
-                    new SqlParameter("@Asunto", SqlDbType.VarChar, 50) {Value = asunto},
-                    new SqlParameter("@Texto", SqlDbType.VarChar, 100) {Value = texto},
-                    new SqlParameter("@CategoriaCod", SqlDbType.Char, 3) {Value = categoriaNormalizada},
-                    new SqlParameter("@Remitente", SqlDbType.Char, 8) {Value = remitenteUsername},
-                    new SqlParameter("@FechaCaducidad", SqlDbType.DateTime) {Value = fechaCaducidad},
+                contexto.Database.ExecuteSqlCommand(
+                    "EXEC spMensaje_Alta @Asunto, @Texto, @CategoriaCod, @Remitente, @FechaCaducidad, @Id OUTPUT, @Ret OUTPUT",
+                    asuntoParametro,
+                    textoParametro,
+                    categoriaParametro,
+                    remitenteParametro,
+                    fechaCaducidadParametro,
                     idParametro,
-                    retParametro
-                };
-
-                contexto.Database.ExecuteSqlCommand("EXEC spMensaje_Alta @Asunto, @Texto, @CategoriaCod, @Remitente, @FechaCaducidad, @Id OUTPUT, @Ret OUTPUT", parametrosAlta);
+                    retParametro);
 
                 var resultadoAlta = (int)retParametro.Value;
                 if (resultadoAlta < 0)
@@ -126,21 +144,26 @@ namespace ModeloEF.Services
 
                 foreach (var destinatario in destinatarioEntidades)
                 {
-                    var retParametroDestinatario = new SqlParameter
+                    var idMensajeParametro = new SqlParameter("@IdMsg", SqlDbType.Int)
                     {
-                        ParameterName = "@Ret",
-                        SqlDbType = SqlDbType.Int,
+                        Value = idMensaje
+                    };
+
+                    var destinoParametro = new SqlParameter("@Destino", SqlDbType.Char, 8)
+                    {
+                        Value = destinatario.Username
+                    };
+
+                    var retParametroDestinatario = new SqlParameter("@Ret", SqlDbType.Int)
+                    {
                         Direction = ParameterDirection.Output
                     };
 
-                    var parametrosDestinatario = new[]
-                    {
-                        new SqlParameter("@IdMsg", SqlDbType.Int) {Value = idMensaje},
-                        new SqlParameter("@Destino", SqlDbType.Char, 8) {Value = destinatario.Username},
-                        retParametroDestinatario
-                    };
-
-                    contexto.Database.ExecuteSqlCommand("EXEC spMensaje_AddDestinatario @IdMsg, @Destino, @Ret OUTPUT", parametrosDestinatario);
+                    contexto.Database.ExecuteSqlCommand(
+                        "EXEC spMensaje_AddDestinatario @IdMsg, @Destino, @Ret OUTPUT",
+                        idMensajeParametro,
+                        destinoParametro,
+                        retParametroDestinatario);
 
                     var resultadoDestinatario = (int)retParametroDestinatario.Value;
                     if (resultadoDestinatario < 0)

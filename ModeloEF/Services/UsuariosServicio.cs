@@ -106,20 +106,22 @@ namespace ModeloEF.Services
 
                 Validador.ValidarEliminacionUsuario(usuario, tieneMensajesEnviados, tieneMensajesRecibidos);
 
-                var parametros = new[]
+                var usernameParametro = new SqlParameter("@Username", SqlDbType.Char, 8)
                 {
-                    new SqlParameter("@Username", SqlDbType.Char, 8) {Value = username},
-                    new SqlParameter
-                    {
-                        ParameterName = "@Ret",
-                        SqlDbType = SqlDbType.Int,
-                        Direction = ParameterDirection.Output
-                    }
+                    Value = username
                 };
 
-                contexto.Database.ExecuteSqlCommand("EXEC spUsuario_Baja @Username, @Ret OUTPUT", parametros);
+                var retornoParametro = new SqlParameter("@Ret", SqlDbType.Int)
+                {
+                    Direction = ParameterDirection.Output
+                };
 
-                var resultado = (int)parametros[1].Value;
+                contexto.Database.ExecuteSqlCommand(
+                    "EXEC spUsuario_Baja @Username, @Ret OUTPUT",
+                    usernameParametro,
+                    retornoParametro);
+
+                var resultado = (int)retornoParametro.Value;
                 if (resultado < 0)
                 {
                     switch (resultado)
@@ -133,6 +135,11 @@ namespace ModeloEF.Services
                         default:
                             throw new InvalidOperationException("Se produjo un error al eliminar el usuario.");
                     }
+                }
+
+                if (contexto.Entry(usuario).State != EntityState.Detached)
+                {
+                    contexto.Entry(usuario).State = EntityState.Detached;
                 }
             }
         }
