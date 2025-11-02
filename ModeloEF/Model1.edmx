@@ -18,7 +18,7 @@
             <PropertyRef Name="DestinoUsername" />
           </Key>
           <Property Name="MensajeId" Type="int" Nullable="false" />
-          <Property Name="DestinoUsername" Type="char" MaxLength="8" Nullable="false" />
+          <Property Name="DestinoUsername" Type="varchar" MaxLength="50" Nullable="false" />
         </EntityType>
         <EntityType Name="Mensajes">
           <Key>
@@ -28,7 +28,7 @@
           <Property Name="Asunto" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="Texto" Type="varchar" MaxLength="100" Nullable="false" />
           <Property Name="FechaEnvio" Type="datetime" Nullable="false" />
-          <Property Name="RemitenteUsername" Type="char" MaxLength="8" Nullable="false" />
+          <Property Name="RemitenteUsername" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="CategoriaCod" Type="char" MaxLength="3" Nullable="false" />
           <Property Name="FechaCaducidad" Type="datetime" Nullable="false" />
         </EntityType>
@@ -36,13 +36,13 @@
           <Key>
             <PropertyRef Name="Username" />
           </Key>
-          <Property Name="Username" Type="char" MaxLength="8" Nullable="false" />
-          <Property Name="Pass" Type="char" MaxLength="8" Nullable="false" />
+          <Property Name="Username" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Pass" Type="varchar" MaxLength="8" Nullable="false" />
           <Property Name="NombreCompleto" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="FechaNacimiento" Type="date" Nullable="false" />
           <Property Name="Email" Type="varchar" MaxLength="100" Nullable="false" />
         </EntityType>
-        <Association Name="FK__MensajeDe__Desti__44FF419A">
+        <Association Name="FK__MensajeDe__Desti__46E78A0C">
           <End Role="Usuarios" Type="Self.Usuarios" Multiplicity="1" />
           <End Role="MensajeDestinatarios" Type="Self.MensajeDestinatarios" Multiplicity="*" />
           <ReferentialConstraint>
@@ -54,7 +54,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__MensajeDe__Mensa__440B1D61">
+        <Association Name="FK__MensajeDe__Mensa__45F365D3">
           <End Role="Mensajes" Type="Self.Mensajes" Multiplicity="1" />
           <End Role="MensajeDestinatarios" Type="Self.MensajeDestinatarios" Multiplicity="*" />
           <ReferentialConstraint>
@@ -66,7 +66,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Mensajes__Catego__403A8C7D">
+        <Association Name="FK_Mensajes_Categorias">
           <End Role="Categorias" Type="Self.Categorias" Multiplicity="1" />
           <End Role="Mensajes" Type="Self.Mensajes" Multiplicity="*" />
           <ReferentialConstraint>
@@ -78,7 +78,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Mensajes__Remite__3F466844">
+        <Association Name="FK_Mensajes_Usuarios">
           <End Role="Usuarios" Type="Self.Usuarios" Multiplicity="1" />
           <End Role="Mensajes" Type="Self.Mensajes" Multiplicity="*" />
           <ReferentialConstraint>
@@ -95,19 +95,19 @@
           <EntitySet Name="MensajeDestinatarios" EntityType="Self.MensajeDestinatarios" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Mensajes" EntityType="Self.Mensajes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Usuarios" EntityType="Self.Usuarios" Schema="dbo" store:Type="Tables" />
-          <AssociationSet Name="FK__MensajeDe__Desti__44FF419A" Association="Self.FK__MensajeDe__Desti__44FF419A">
+          <AssociationSet Name="FK__MensajeDe__Desti__46E78A0C" Association="Self.FK__MensajeDe__Desti__46E78A0C">
             <End Role="Usuarios" EntitySet="Usuarios" />
             <End Role="MensajeDestinatarios" EntitySet="MensajeDestinatarios" />
           </AssociationSet>
-          <AssociationSet Name="FK__MensajeDe__Mensa__440B1D61" Association="Self.FK__MensajeDe__Mensa__440B1D61">
+          <AssociationSet Name="FK__MensajeDe__Mensa__45F365D3" Association="Self.FK__MensajeDe__Mensa__45F365D3">
             <End Role="Mensajes" EntitySet="Mensajes" />
             <End Role="MensajeDestinatarios" EntitySet="MensajeDestinatarios" />
           </AssociationSet>
-          <AssociationSet Name="FK__Mensajes__Catego__403A8C7D" Association="Self.FK__Mensajes__Catego__403A8C7D">
+          <AssociationSet Name="FK_Mensajes_Categorias" Association="Self.FK_Mensajes_Categorias">
             <End Role="Categorias" EntitySet="Categorias" />
             <End Role="Mensajes" EntitySet="Mensajes" />
           </AssociationSet>
-          <AssociationSet Name="FK__Mensajes__Remite__3F466844" Association="Self.FK__Mensajes__Remite__3F466844">
+          <AssociationSet Name="FK_Mensajes_Usuarios" Association="Self.FK_Mensajes_Usuarios">
             <End Role="Usuarios" EntitySet="Usuarios" />
             <End Role="Mensajes" EntitySet="Mensajes" />
           </AssociationSet>
@@ -133,25 +133,25 @@
           <Property Name="Texto" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="FechaEnvio" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="FechaCaducidad" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="Categoria" Relationship="Self.FK__Mensajes__Catego__403A8C7D" FromRole="Mensajes" ToRole="Categorias" />
-          <NavigationProperty Name="Remitente" Relationship="Self.FK__Mensajes__Remite__3F466844" FromRole="Mensajes" ToRole="Usuarios" />
+          <NavigationProperty Name="Categorias" Relationship="Self.FK_Mensajes_Categorias" FromRole="Mensajes" ToRole="Categorias" />
+          <NavigationProperty Name="Remitente" Relationship="Self.FK_Mensajes_Usuarios" FromRole="Mensajes" ToRole="Usuarios" />
           <NavigationProperty Name="Destinatarios" Relationship="Self.MensajeDestinatarios" FromRole="Mensajes" ToRole="Usuarios" />
         </EntityType>
         <EntityType Name="Usuarios">
           <Key>
             <PropertyRef Name="Username" />
           </Key>
-          <Property Name="Username" Type="String" MaxLength="8" FixedLength="true" Unicode="false" Nullable="false" />
-          <Property Name="Pass" Type="String" MaxLength="8" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="Username" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Pass" Type="String" MaxLength="8" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="NombreCompleto" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="FechaNacimiento" Type="DateTime" Nullable="false" Precision="0" />
           <Property Name="Email" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
         </EntityType>
-        <Association Name="FK__Mensajes__Catego__403A8C7D">
+        <Association Name="FK_Mensajes_Categorias">
           <End Role="Categorias" Type="Self.Categorias" Multiplicity="1" />
           <End Role="Mensajes" Type="Self.Mensajes" Multiplicity="*" />
         </Association>
-        <Association Name="FK__Mensajes__Remite__3F466844">
+        <Association Name="FK_Mensajes_Usuarios">
           <End Role="Usuarios" Type="Self.Usuarios" Multiplicity="1" />
           <End Role="Mensajes" Type="Self.Mensajes" Multiplicity="*" />
         </Association>
@@ -159,15 +159,15 @@
           <End Role="Usuarios" Type="Self.Usuarios" Multiplicity="*" />
           <End Role="Mensajes" Type="Self.Mensajes" Multiplicity="*" />
         </Association>
-        <EntityContainer Name="BiosMessengerEntities1" annotation:LazyLoadingEnabled="true">
+        <EntityContainer Name="BiosMessenger" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Categorias" EntityType="Self.Categorias" />
           <EntitySet Name="Mensajes" EntityType="Self.Mensajes" />
           <EntitySet Name="Usuarios" EntityType="Self.Usuarios" />
-          <AssociationSet Name="FK__Mensajes__Catego__403A8C7D" Association="Self.FK__Mensajes__Catego__403A8C7D">
+          <AssociationSet Name="FK_Mensajes_Categorias" Association="Self.FK_Mensajes_Categorias">
             <End Role="Categorias" EntitySet="Categorias" />
             <End Role="Mensajes" EntitySet="Mensajes" />
           </AssociationSet>
-          <AssociationSet Name="FK__Mensajes__Remite__3F466844" Association="Self.FK__Mensajes__Remite__3F466844">
+          <AssociationSet Name="FK_Mensajes_Usuarios" Association="Self.FK_Mensajes_Usuarios">
             <End Role="Usuarios" EntitySet="Usuarios" />
             <End Role="Mensajes" EntitySet="Mensajes" />
           </AssociationSet>
@@ -181,7 +181,7 @@
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="BiosMessengerModelStoreContainer" CdmEntityContainer="BiosMessengerEntities1">
+        <EntityContainerMapping StorageEntityContainer="BiosMessengerModelStoreContainer" CdmEntityContainer="BiosMessenger">
           <EntitySetMapping Name="Categorias">
             <EntityTypeMapping TypeName="BiosMessengerModel.Categorias">
               <MappingFragment StoreEntitySet="Categorias">
@@ -212,7 +212,7 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <AssociationSetMapping Name="FK__Mensajes__Catego__403A8C7D" TypeName="BiosMessengerModel.FK__Mensajes__Catego__403A8C7D" StoreEntitySet="Mensajes">
+          <AssociationSetMapping Name="FK_Mensajes_Categorias" TypeName="BiosMessengerModel.FK_Mensajes_Categorias" StoreEntitySet="Mensajes">
             <EndProperty Name="Categorias">
               <ScalarProperty Name="Codigo" ColumnName="CategoriaCod" />
             </EndProperty>
@@ -220,7 +220,7 @@
               <ScalarProperty Name="Id" ColumnName="Id" />
             </EndProperty>
           </AssociationSetMapping>
-          <AssociationSetMapping Name="FK__Mensajes__Remite__3F466844" TypeName="BiosMessengerModel.FK__Mensajes__Remite__3F466844" StoreEntitySet="Mensajes">
+          <AssociationSetMapping Name="FK_Mensajes_Usuarios" TypeName="BiosMessengerModel.FK_Mensajes_Usuarios" StoreEntitySet="Mensajes">
             <EndProperty Name="Usuarios">
               <ScalarProperty Name="Username" ColumnName="RemitenteUsername" />
             </EndProperty>

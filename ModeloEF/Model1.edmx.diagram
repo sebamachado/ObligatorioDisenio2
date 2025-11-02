@@ -4,12 +4,12 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="00c353d092ad4b5398d240e94b084840" Name="Diagram1">
-        <EntityTypeShape EntityType="BiosMessengerModel.Categorias" Width="1.5" PointX="6.25" PointY="1.5" IsExpanded="true" />
+      <Diagram DiagramId="770bc794565d41ff82d8e3d6452af41e" Name="Diagram1">
+        <EntityTypeShape EntityType="BiosMessengerModel.Categorias" Width="1.5" PointX="6.625" PointY="1.75" IsExpanded="true" />
         <EntityTypeShape EntityType="BiosMessengerModel.Mensajes" Width="1.5" PointX="3" PointY="1" IsExpanded="true" />
         <EntityTypeShape EntityType="BiosMessengerModel.Usuarios" Width="1.5" PointX="0.75" PointY="1" IsExpanded="true" />
-        <AssociationConnector Association="BiosMessengerModel.FK__Mensajes__Catego__403A8C7D" ManuallyRouted="false" />
-        <AssociationConnector Association="BiosMessengerModel.FK__Mensajes__Remite__3F466844" ManuallyRouted="false" />
+        <AssociationConnector Association="BiosMessengerModel.FK_Mensajes_Categorias" ManuallyRouted="false" />
+        <AssociationConnector Association="BiosMessengerModel.FK_Mensajes_Usuarios" ManuallyRouted="false" />
         <AssociationConnector Association="BiosMessengerModel.MensajeDestinatarios" ManuallyRouted="false" />
       </Diagram>
     </edmx:Diagrams>

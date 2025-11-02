@@ -26,7 +26,7 @@ namespace ModeloEF
         public System.DateTime FechaEnvio { get; set; }
         public System.DateTime FechaCaducidad { get; set; }
     
-        public virtual Categorias Categoria { get; set; }
+        public virtual Categorias Categorias { get; set; }
         public virtual Usuarios Remitente { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Usuarios> Destinatarios { get; set; }
