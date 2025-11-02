@@ -14,16 +14,7 @@ namespace ModeloEF
     
     public partial class Categorias
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Categorias()
-        {
-            this.Mensajes = new HashSet<Mensajes>();
-        }
-    
         public string Codigo { get; set; }
         public string Nombre { get; set; }
-    
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Mensajes> Mensajes { get; set; }
     }
 }

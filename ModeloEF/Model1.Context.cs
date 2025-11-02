@@ -13,10 +13,10 @@ namespace ModeloEF
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     
-    public partial class BiosMessengerEntities : DbContext
+    public partial class BiosMessengerEntities1 : DbContext
     {
-        public BiosMessengerEntities()
-            : base("name=BiosMessengerEntities")
+        public BiosMessengerEntities1()
+            : base("name=BiosMessengerEntities1")
         {
         }
     

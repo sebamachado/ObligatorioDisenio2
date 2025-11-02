@@ -69,8 +69,8 @@ CREATE TABLE Mensajes (
     CategoriaCod      CHAR(3)       NOT NULL,
     FechaCaducidad    DATETIME      NOT NULL,
     CONSTRAINT PK_Mensajes PRIMARY KEY (Id),
-    CONSTRAINT FK_Mensajes_Usuarios   FOREIGN KEY (RemitenteUsername) REFERENCES dbo.Usuarios (Username),
-    CONSTRAINT FK_Mensajes_Categorias FOREIGN KEY (CategoriaCod)      REFERENCES dbo.Categorias (Codigo),
+    CONSTRAINT FK_Mensajes_Usuarios   FOREIGN KEY (RemitenteUsername) REFERENCES Usuarios (Username),
+    CONSTRAINT FK_Mensajes_Categorias FOREIGN KEY (CategoriaCod)      REFERENCES Categorias (Codigo),
     
 	CONSTRAINT CK_Mensajes_Caducidad
         CHECK (FechaCaducidad >= DATEADD(DAY, 1, FechaEnvio))

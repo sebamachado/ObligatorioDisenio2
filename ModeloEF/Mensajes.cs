@@ -17,20 +17,18 @@ namespace ModeloEF
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Mensajes()
         {
-            this.Usuarios1 = new HashSet<Usuarios>();
+            this.Destinatarios = new HashSet<Usuarios>();
         }
     
         public int Id { get; set; }
         public string Asunto { get; set; }
         public string Texto { get; set; }
         public System.DateTime FechaEnvio { get; set; }
-        public string RemitenteUsername { get; set; }
-        public string CategoriaCod { get; set; }
         public System.DateTime FechaCaducidad { get; set; }
     
-        public virtual Categorias Categorias { get; set; }
-        public virtual Usuarios Usuarios { get; set; }
+        public virtual Categorias Categoria { get; set; }
+        public virtual Usuarios Remitente { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Usuarios> Usuarios1 { get; set; }
+        public virtual ICollection<Usuarios> Destinatarios { get; set; }
     }
 }

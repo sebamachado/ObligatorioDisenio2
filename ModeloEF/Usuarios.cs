@@ -14,22 +14,10 @@ namespace ModeloEF
     
     public partial class Usuarios
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Usuarios()
-        {
-            this.Mensajes = new HashSet<Mensajes>();
-            this.Mensajes1 = new HashSet<Mensajes>();
-        }
-    
         public string Username { get; set; }
         public string Pass { get; set; }
         public string NombreCompleto { get; set; }
         public System.DateTime FechaNacimiento { get; set; }
         public string Email { get; set; }
-    
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Mensajes> Mensajes { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Mensajes> Mensajes1 { get; set; }
     }
 }
