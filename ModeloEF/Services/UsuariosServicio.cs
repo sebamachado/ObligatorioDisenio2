@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
-using ModeloEF.Entities;
+using System.Data.Entity;
+using Usuario = ModeloEF.Usuarios;
 
 namespace ModeloEF.Services
 {
@@ -18,7 +18,7 @@ namespace ModeloEF.Services
         /// </summary>
         public IList<Usuario> ObtenerTodos()
         {
-            using (var contexto = new BiosMessengerContext())
+            using (var contexto = new BiosMessengerEntities1())
             {
                 return contexto.Usuarios
                     .OrderBy(u => u.Username)
@@ -28,7 +28,7 @@ namespace ModeloEF.Services
 
         public int ContarUsuarios()
         {
-            using (var contexto = new BiosMessengerContext())
+            using (var contexto = new BiosMessengerEntities1())
             {
                 return contexto.Usuarios.Count();
             }
@@ -39,7 +39,7 @@ namespace ModeloEF.Services
         /// </summary>
         public Usuario ObtenerPorUsername(string username)
         {
-            using (var contexto = new BiosMessengerContext())
+            using (var contexto = new BiosMessengerEntities1())
             {
                 return contexto.Usuarios
                     .SingleOrDefault(u => u.Username == username);
@@ -53,7 +53,7 @@ namespace ModeloEF.Services
         {
             Validador.ValidarUsuario(usuario);
 
-            using (var contexto = new BiosMessengerContext())
+            using (var contexto = new BiosMessengerEntities1())
             {
                 if (contexto.Usuarios.Any(u => u.Username == usuario.Username))
                 {
@@ -72,7 +72,7 @@ namespace ModeloEF.Services
         {
             Validador.ValidarActualizacionUsuario(usuario);
 
-            using (var contexto = new BiosMessengerContext())
+            using (var contexto = new BiosMessengerEntities1())
             {
                 var existente = contexto.Usuarios.SingleOrDefault(u => u.Username == usuario.Username);
                 if (existente == null)
@@ -91,11 +91,9 @@ namespace ModeloEF.Services
         /// </summary>
         public void Eliminar(string username)
         {
-            using (var contexto = new BiosMessengerContext())
+            using (var contexto = new BiosMessengerEntities1())
             {
                 var usuario = contexto.Usuarios
-                    .Include("MensajesEnviados")
-                    .Include("MensajesDestinados")
                     .SingleOrDefault(u => u.Username == username);
 
                 if (usuario == null)
@@ -103,7 +101,10 @@ namespace ModeloEF.Services
                     throw new InvalidOperationException("El usuario indicado no existe.");
                 }
 
-                Validador.ValidarEliminacionUsuario(usuario);
+                var tieneMensajesEnviados = contexto.Mensajes.Any(m => m.Remitente.Username == username);
+                var tieneMensajesRecibidos = contexto.Mensajes.Any(m => m.Destinatarios.Any(d => d.Username == username));
+
+                Validador.ValidarEliminacionUsuario(usuario, tieneMensajesEnviados, tieneMensajesRecibidos);
 
                 var parametros = new[]
                 {
