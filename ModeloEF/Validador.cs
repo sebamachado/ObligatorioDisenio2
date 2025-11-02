@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using ModeloEF.Entities;
+using Usuario = ModeloEF.Usuarios;
 
 namespace ModeloEF
 {
@@ -59,19 +59,19 @@ namespace ModeloEF
             ValidarUsuario(usuario);
         }
 
-        public static void ValidarEliminacionUsuario(Usuario usuario)
+        public static void ValidarEliminacionUsuario(Usuario usuario, bool tieneMensajesEnviados, bool tieneMensajesRecibidos)
         {
             if (usuario == null)
             {
                 throw new ArgumentNullException(nameof(usuario));
             }
 
-            if (usuario.MensajesEnviados.Any())
+            if (tieneMensajesEnviados)
             {
                 throw new InvalidOperationException("No es posible eliminar un usuario con mensajes enviados.");
             }
 
-            if (usuario.MensajesDestinados.Any())
+            if (tieneMensajesRecibidos)
             {
                 throw new InvalidOperationException("No es posible eliminar un usuario que haya recibido mensajes.");
             }

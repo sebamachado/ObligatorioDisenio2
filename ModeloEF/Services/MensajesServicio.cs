@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
-using ModeloEF.Entities;
+using System.Data.Entity;
+using Categoria = ModeloEF.Categorias;
+using Mensaje = ModeloEF.Mensajes;
+using Usuario = ModeloEF.Usuarios;
 
 namespace ModeloEF.Services
 {
@@ -15,7 +17,7 @@ namespace ModeloEF.Services
     {
         public IList<Categoria> ObtenerCategorias()
         {
-            using (var contexto = new BiosMessengerContext())
+            using (var contexto = new BiosMessengerEntities1())
             {
                 return contexto.Categorias
                     .OrderBy(c => c.Nombre)
@@ -25,7 +27,7 @@ namespace ModeloEF.Services
 
         public int ContarMensajes()
         {
-            using (var contexto = new BiosMessengerContext())
+            using (var contexto = new BiosMessengerEntities1())
             {
                 return contexto.Mensajes.Count();
             }
@@ -33,13 +35,13 @@ namespace ModeloEF.Services
 
         public IList<Mensaje> ObtenerBandejaSalida(string remitente)
         {
-            using (var contexto = new BiosMessengerContext())
+            using (var contexto = new BiosMessengerEntities1())
             {
                 return contexto.Mensajes
-                    .Include("Destinatarios")
-                    .Include("Remitente")
-                    .Include("Categoria")
-                    .Where(m => m.RemitenteUsername == remitente)
+                    .Include(m => m.Destinatarios)
+                    .Include(m => m.Remitente)
+                    .Include(m => m.Categoria)
+                    .Where(m => m.Remitente.Username == remitente)
                     .OrderByDescending(m => m.FechaEnvio)
                     .ToList();
             }
@@ -47,13 +49,13 @@ namespace ModeloEF.Services
 
         public IList<Mensaje> ObtenerBandejaEntrada(string destinatario)
         {
-            using (var contexto = new BiosMessengerContext())
+            using (var contexto = new BiosMessengerEntities1())
             {
                 var hoy = DateTime.Now;
                 return contexto.Mensajes
-                    .Include("Destinatarios")
-                    .Include("Remitente")
-                    .Include("Categoria")
+                    .Include(m => m.Destinatarios)
+                    .Include(m => m.Remitente)
+                    .Include(m => m.Categoria)
                     .Where(m => m.Destinatarios.Any(u => u.Username == destinatario) && m.FechaCaducidad > hoy)
                     .OrderByDescending(m => m.FechaEnvio)
                     .ToList();
@@ -65,7 +67,7 @@ namespace ModeloEF.Services
         /// </summary>
         public void CrearMensaje(string asunto, string texto, string categoriaCod, string remitenteUsername, DateTime fechaCaducidad, IEnumerable<string> destinatarios)
         {
-            using (var contexto = new BiosMessengerContext())
+            using (var contexto = new BiosMessengerEntities1())
             {
                 remitenteUsername = remitenteUsername.ToUpperInvariant();
                 var remitente = contexto.Usuarios.SingleOrDefault(u => u.Username == remitenteUsername);
@@ -154,15 +156,9 @@ namespace ModeloEF.Services
         /// </summary>
         public int ContarMensajesConMasDeCincoDestinatarios()
         {
-            using (var contexto = new BiosMessengerContext())
+            using (var contexto = new BiosMessengerEntities1())
             {
-                var query = from mensaje in contexto.Mensajes
-                            where (from destino in contexto.Usuarios
-                                   where destino.MensajesDestinados.Any(m => m.Id == mensaje.Id)
-                                   select destino.Username).Count() > 5
-                            select mensaje.Id;
-
-                return query.Count();
+                return contexto.Mensajes.Count(m => m.Destinatarios.Count() > 5);
             }
         }
 
